@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Shoofle and OAuth</title>
+		<link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<link href="../static/shoofle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<article class="project">
+			<h1>OAuth Adventures</h1>
+			<h4>(how does it work?)</h4>
+			<p>I recently had some exciting adventures involving trying to make a bot that posted to Tumblr. I eventually got it working (well, so far, just the posting part, but that's the one I didn't understand!)) but decided that I should write down what I learned about OAuth - and specifically, how to use it to write robots that post on their own.</p>
+			<p>The problem is that all the many guides to using OAuth are specifically geared towards the expected use case - I want my app to access users' data on other services like twitter! That's not what I want. I want my bot to be able to periodically run and access some tumblr accounts. This seems like it shouldn't be too hard, but I don't want to code in the password to this account! So what do I do?</p>
+			<p>So let's go through this backwards.</p>
+			<p>It's doable, very doable if you're using a library like oauth2, and extremely doable if you're using <a href="https://github.com/tumblr/pytumblr">tumblr's python api!</a> Either way, you're going to end up making requests to the <a href="http://www.tumblr.com/docs/en/api/v2">tumblr web api</a> using open authentication, and you're going to need a token to do it.</p>
+			<p>You need an Access Token.</p>
+			<p>An access token is keyed to your application, and it's been verified by Tumblr that a user has verified that you can use it. Think of it as the key to your user's content, which your user hands over to the application.</p>
+			<p>Of course, in your case, you're not going to care much about the exact mechanics of acquiring the access token, beyond the first time. You use the access token to sign your requests. How to do that is something I'm sure there are other tutorials for - if you're using oauth2, you simply need to specify it as the token for your client object:</p>
+			<pre><code>import oauth2 as oauth
+client = oauth.Client(consumer, access_token)</pre></code>
+			<p><code>consumer</code> here refers to a key/secret pair, which you're given when you register your application. It lets tumblr know (through the oauth protocol) which application this is.</p>
+			<p>The <code>access_token</code> is <em>also</em> a key/secret pair, but you get it when the user logs in through oauth. The key and the secret are two strings of random-looking stuff, which is cryptographic magic.</p>
+			<p>If you're trying to figure out (as I was) how to get your python script to access user-restricted tumblr data, but you don't want to code the password to your account directly into the script, then the access token is exactly what you're looking for. I stuck it in a file that I don't share with anyone, from which my script imports the keys. Now I could share my script, but no one would have my keys - and even if they did, I could revoke its access to my account at any time.</p>
+			<p>If I'm using oauth2, then it works as above, and you use the <code>client</code> object to make your requests. If you're using tumblrpy, then you simply provide the consumer token's key and secret, as well as the access token's key and secret, to the library when you are initializing your client object. It's very easy!</p>
+			<h4>Okay but how do you do it?</h4>
+			<p>I can tell you're a smart cookie! That's a very good question. It's easy to use the access token, but how do you actually <em>acquire</em> it? As far as I can tell, the answer is to do the standard three-legged authentication process, but only do it once.</p>
+			<p>I just brought up the interactive python console and started typing in code as though I were trying to code a three-legged authentication workflow (this is the one you hear about when you google for oauth tutorials). Here are the steps of that process, in case you forgot:</p>
+			<ul>
+				<li>Acquire a consumer key and secret when you register your application.</li>
+				<li>Initialize an <code>oauth.Consumer</code> object with the consumer key and secret.</li>
+				<li>Initialize an <code>oauth.Client</code> object with your <code>oauth.Consumer</code> object.</li>
+				<li>Using that client, make a request to the request token url (for tumblr, it's <a href="http://tumblr.com/oauth/request_token">http://tumblr.com/oauth/request_token</a>). The response will contain a request token - a key and secret pair. This is used to acquire your access token!</li>
+				<li>Produce a URL to which to direct the user you want to get credentials for. This looks something like this: <code>http://tumblr.com/oauth/authorize?oauth_token=[your request token's key goes here]</code>.</li>
+				<li>When a user (such as yourself!) goes there, they will be prompted for what to do, and then when they grant authorization, they'll be redirected somewhere with a "verifier" in the URL arguments. If you were making a standard three-legged application, this would redirect you back to your website, which would then store and use the verifier. You just need to redirect yourself to somewhere and copy/paste the verifier out of your URL bar. The callback URL is set in the tumblr settings for the application.</li>
+				<li>Now you can use <code>token.set_verifier([some verifier])</code> to set your request token as being verified as good.</li>
+				<li>Your request token has been verified, so now you simply make a request (using that token, so <code>client = oauth.Client(consumer, request_token)</code>) to the access token URL - for example, <a href="http://tumblr.com/oauth/access_token">http://tumblr.com/oauth/access_token</a>. The response to <em>this</em> will finally contain... Drumroll!</li>
+			</ul>
+			<h4>The access token!</h4>
+			<p>So that's how it's done.</p>
+		</article>
+	</body>
+</html>

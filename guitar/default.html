@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Shoofle Plays Guitar!</title>
+		<link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<link href="../static/shoofle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<div class="project">
+			<p>I occasionally play a guitar. I'm really bad at it! But I love my guitar. My mom bought it when she was younger than I am now, and she used to play it for us when my siblings and I were children. I really adore music, but I wasn't aware of that for the longest time - and my mom gave me her guitar when I went away to college, and I've been poking at it every now and then ever since. I don't take it particularly seriously and it's just something I enjoy doing when it's beautiful outside and I can sit on my porch and just plink away.</p>
+			<p>Every now and then I sit down and try (usually unsuccessfully) to learn a song from tab. Here's a list of songs!</p>
+			<ul>
+				{% for file in guitar_files %}
+				<li><a href="{{ file }}">{{ file|replace("_", " ") }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>A Language for Games</title>
+    <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
+    <link href="../static/shoofle.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <p>I like making games but sometimes I spend a lot of time doing stuff that is just annoying. What if a language or environment were designed to make those things easy?</p>
+    <hr>
+    <article class="project">
+      <header>
+        <h1>Snorlax Evaluation</h1>
+        <p>(define-by-reference, or: lazy evaluation taken to extremes)</p>
+      </header>
+      <p>Okay, so I've got a <code>Bomb</code> entity in my game. It's already got the behavior for flying toward its <code>destination</code>. What if I want to make a <code>SmartBomb</code> that tracks a target even if they move? I might do it something like this:</p>
+      <pre><code>SmartBomb.on_update = function (timestep) {
+  // other update behaviors go in this function as well
+  this.destination = target.position
+}</code></pre>
+      <p>I have to explicitly tell my engine to execute this every frame. I think in terms of this kind of thing already, because I'm a math and physics person. Why can't I define relationships like this more simply? What if, in fact, this was the default way we referred to values? <span class="sidenote span4">It's worth noting that what I've thought of here is essentially just <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">functional reactive programming</a>. You can go read wikipedia if you want.</span></p>
+      <pre><code>SmartBomb.destination = target.position</code></pre>
+      <p>Any time something fetches the value of <code>SmartBomb.destination</code> it'll fetch the value of <code>target.position</code>. Writing it this way, instead of explicitly specifying which variables need to be kept up-to-date with other variables (and when they need to be updated!), means it's easier to give variables interesting dependencies on other values - like this <code>shield</code> which should float a certain distance between the <code>player</code> and the <code>enemy</code>:</p>
+      <pre><code>shield.position = player.position + shield.distance * unit_vector(enemy.position - player.position)</code></pre>
+      <p>If and when you <em>do</em> need to store something's value at a specific time, you can do that if you want - for example, this code when a bomb explodes:</p>
+      <pre><code>explosion_location = current_value(bomb.position)
+// or maybe the syntax is like this:
+explosion_location = bomb.position.current_value</code></pre>
+      <p>So far, everything's time-independent. For example, the <code>shield</code> object's <code>position</code> depends only on the positions of other objects.</p>
+      <p>Why not include time-dependence? A <code>bullet</code> has a <code>position</code> and a <code>velocity</code>, and these are related in a way that doesn't change at any point during gameplay. Why not codify that relationship in a similar way?</p>
+      <pre><code>bullet.position = bullet.position + time_step * bullet.velocity
+// or maybe
+bullet.position = bullet.position + bullet.position.time_since_last_calculation * bullet.velocity</code></pre>
+      <p>Okay, if this seems like impossible magic, I'm sorry. Let's walk through it:</p>
+      <ol>
+        <li>The global loop asks for <code>bullet.position</code> in order to know where it should be drawn.</li>
+        <li><code>bullet.position</code> looks at its cached value and sees that it's out of date.</li>
+        <li><code>bullet.position</code> subtracts timestamps to find the time step between now and whenever it last got calculated, and remembers this as <code>time_step</code></li>
+        <li>The time-dependence expression is now evaluated, using the last calculated value for <code>bullet.position</code>, and fetching <code>bullet.velocity</code> as normal.</li>
+      </ol>
+      <p>Hell, why not remember the entire history of a variable's values?<span class="sidenote span4">Performance.</span> When I fetch the last calculated value for <code>bullet.position</code>, why not go ahead and make that a graph-crawling reference-calculation just like everything else?<span class="sidenote span4">Reactive time-dependence is something to think about for an interesting mechanic, if nothing else - keeping track of dependencies on history means you could change a value at any point throughout the game's history and see how it changes things... Just like <a href="http://achrongame.com">Achron</a>! And the flaws that make it seem infeasible here wouldn't be a problem in, say, a turn-based time game.</span></p>
+      <p>Performance is a legitimate worry at that point. If you include the full-on time-dependence, then depending on implementation you might end up following a reference back through every frame the game's been through. This approach would obviously fall apart because every value in your world is going to be at least O(t) to calculate, which sucks - there should be <em>no</em> time-dependent complexity - but there are solutions:</p>
+      <ul>
+        <li>Careful design can ensure that your objects aren't too densely interlinked.</li>
+        <li>If you know you can do things more efficiently in some strenuous case, you can always hard-code it to extract current values and explicitly pass them around whenever you want.</li>
+        <li>Variables should carry metadata about when they last changed, and when their predecessors and descendents in the graph have changed - so that, in calculating the <code>shield</code>'s <code>position</code>, you don't re-fetch the <code>enemy.position</code>, if you know it hasn't changed.</li>
+      </ul>
+      <p>Besides which, we have fast computers, and without running into hard algorithmic complexity problems (collision detection, I'm lookin' at you!) it's not <em>that</em> easy to overload a modern gaming machine. And hey, maybe having declarative time-dependent values is a pipe dream - I don't care. The core idea is still awesome.</p>
+      <p>Here's an example (with more attention paid to data types) of how I'd come up with a vector that always points to a set offset from the position of <code>bullet</code>.</p>
+      <pre><code>bullet.position = Wrapper(v(1,2))
+offset = v(3,4)
+endpoint = bullet.position + offset
+print endpoint</code>
+<samp>--> WrapperSum(bullet.position, offset)</samp>
+<code>print endpoint.current_value</code>
+<samp>--> v(4,6)</samp>
+<code>bullet.position.current_value = v(-10,0)
+print endpoint.current_value</code>
+<samp>--> v(-7,4)</samp></pre>
+      <p>Once I've started thinking and talking about this, I start wondering how much we need imperative game loops at all, for anything other than those troublesome time dependencies and feedback loops. I wonder...</p>
+      <pre><code>print bullet.contacts</code>
+<samp>--> Wrapper(List&lt;Contacts&gt;)</samp>
+<code>contact_acceleration = sum(contact.force_to_resolve for contact in bullet.contacts)
+bullet.acceleration = contact_acceleration</code></pre>
+      <p>Assuming that force due to contacts is the only thing present in the world, then the bullet now feels enough acceleration to resolve all the conflicts. I mean, assuming contacts are simple to work with, and they always are. Right? Right?</p>
+      <p>I'm thinking about this a lot because this kind of referencing is very natural for things like defining interlinks between components in my game engine - I've got conflicting interests:</p>
+      <ul>
+        <li>I want to keep my vectors and properties lightweight, so that a <code>bullet</code>'s position should just be a vector, with which I should be able to do math as freely and easily as integers.</li>
+        <li>But I also want to ensure that the <code>collision component</code>'s position is the same as the <code>bullet</code>'s position! I'd like to do <code>collision_comp.position = bullet.position</code></li>
+        <li>And then I run into the problem that since I want my vectors as primitive as possible, if I change <code>bullet.position</code> then it's not going to change <code>collision_comp.position</code> because pass-by-value is the dominant paradigm.</li>
+      </ul>
+      <p>The solution I've been working with is wrap together <em>sets</em> of related data (as <i>components</i>). The <code>player</code> object has a <code>PositionComponent</code> and a <code>CollisionComponent</code>, and the <code>CollisionComponent</code> stores a reference to the <code>player</code>'s <code>PositionComponent</code> so that it can access it at any time. Actually holding those references constant means that there would be problems if the <code>player.position_component</code> suddenly changed to a different object - but that should never happen. I'm satisfied with this for the reasons I implemented it in the first place, but it doesn't get me the dynamic interlinking I'd like from something more like functional reactive programming.</p>
+      <p>So I don't know. I would love to have the <em>capacity</em> for functional reactive programming in my game engines, at the least! It's so useful for making bulletproof dynamic interactive systems.</p>
+    </article>
+    <hr>
+    <article class="project">
+      <header>
+        <h1>Time Integration</h1>
+      </header>
+      <p>I find myself writing cooldowns and countdowns all the time. Bullets can only fire so fast, bombs explode after five seconds, enemies spawn every 10-15 seconds. Every time I do it, I write the same boilerplate in the initialization:</p>
+      <pre><code>goomba.cooldown_max = 5 // 5 seconds to cool down
+goomba.cooldown_timer = goomba.cooldown_max</code></pre>
+      <p>and the same boilerplate in the update function:</p>
+      <pre><code>if goomba.cooldown_timer &gt; 0:
+  goomba.cooldown_timer -= time_step
+if goomba.cooldown_timer &lt; 0:
+  // insert end behavior here</code></pre>
+      <p>and somewhere, I activate this behavior (in response to a keypress, or proximit, or contact):</p>
+      <pre><code>goomba.cooldown_timer = goomba.cooldown_max</code></pre>
+      <p>I do this kind of thing so often that I feel like it should be one of the basic functionalities offered when I'm trying to describe game entity behavior.</p>
+      <pre><code>// initialization
+goomba.shot_timer = new CooldownTimer(length=5s, on_end=function() {...})
+// update functionality should be taken care of automatically, but if not:
+goomba.shot_timer.step(time_step)
+// activating the timer:
+goomba.shot_timer.start()</code></pre>
+      <p>Now, wasn't that easy?</p>
+      <p>Of course, that's a pretty simple case! There are obvious extensions, though:</p>
+      <pre><code>goomba.blink_timer = new EndlessTimer()
+goomba.blink_timer.interval = 5s
+goomba.blink_timer.at_progress(0%, goomba.change_color) // change color at the start of each interval
+goomba.blink_timer.at_progress(50%, goomba.take_step) // take a step once every interval halfway through</code></pre>
+      <p>And now making timed behavior for our goomba is easy! We can even speed up the goomba easily: <code>goomba.blink_timer.interval = 3s</code></p>
+      <p>Ideally, you don't need to even specify when to <code>step</code> your timers - that should be taken care of automatically. Of course, that means we'd want to <em>register</em> these timers instead of simply declaring them as a member - but maybe that's a matter of a grander architectural problem.</p>
+      <p>Although! If we <em>do</em> let the developer take care of stepping the timers, then we can also use it for things that <em>aren't</em> time-dependent:</p>
+      <pre><code>player.limit_bar = new Meter(length=100) // general verison of the CooldownTimer
+player.on('hit by enemy', player.limit_bar.step)
+player.limit_bar.at_progress(100%, player.limit_break)</code></pre>
+      <p>And now we've got a way for limit breaks to engage. Assuming there's a pre-existing event system and everything is architected carefully, it's now incredibly easy to fill meters in response to events.</p>
+    </article>
+    <article class="project">
+      <header>
+        <h1>Easy Peasy State Machinesy</h1>
+      </header>
+      <p>Why do I always have to actually use boolean flags (manually setting and unsetting them) to track the states of my entities?</p>
+      <pre>
+<code>player.shielding = new Toggle()
+keyboard.on('w pressed', player.shielding.next)</code></pre>
+      <p>I'm just throwing this syntax together off the top of my head. The syntax isn't important - what's important is that I should be able to describe this and have it happen.</p>
+      <pre>
+<code>strobelight.color = new Sequence(['red', 'green', 'blue'])
+strobelight.update = function(dt) {
+  strobelight.color.next()
+  strobelight.draw()
+}</code></pre>
+      <p>Seriously, don't worry about this syntax - it's ugly and I just threw it together. The point is the kinds of things I should be able to do. This is all totally feasible.</p>
+      <pre>
+<code>goomba.ai = new StateMachine(['sleep', 'suspicious', 'alert'])
+goomba.ai['sleep'].transitions_to['suspicious'].on(goomba.near(player))
+// the state 'sleep' should transition to 'suspicious' on the event goomba.near(player)
+goomba.ai['sleep'].update = goomba.draw_snores
+
+goomba.ai['suspicious'].transitions_to['alert'].on(goomba.sees(player))
+goomba.ai['suspicious'].update = goomba.search_for_player
+
+// shit we forgot to make a state for just patrolling
+goomba.ai.add_state('patrol')
+goomba.ai['patrol'].transitions_to['sleep'].after(5 seconds)
+goomba.ai['patrol'].update = goomba.wander
+
+// oh hey, she should occasionally wake up to patrol!
+goomba.ai['sleep'].transitions_to['patrol'].after(5-10 seconds)</code></pre>
+      <p>So y'know. State machines are powerful. In order to really use them, you need a robust event system, or else they're a huge pain - it's still possible, you just... need to code it to check the conditions on each update loop. That could get expensive!</p>
+      <p>For the example of checking <code>goomba.near(player)</code> - which has an optional argument for the distance - that function checks if there's already a collision detection object attached to <code>goomba</code> for setting off proximity events. If there is, it returns the event handle, which can be used for binding behaviors to the firing of that event. If a proximity collider of the right size <em>doesn't</em> exist, then it creates one, and returns the event handle.</p>
+      <p></p>
+    </article>
+  </body>
+</html>

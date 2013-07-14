@@ -1,0 +1,7 @@
+digraph tamari {
+OaObOcd -> OOabOcd;
+OOaObcd -> OOOabcd;
+OaOObcd -> OOaObcd;
+OOabOcd -> OOOabcd;
+OaObOcd -> OaOObcd;
+}

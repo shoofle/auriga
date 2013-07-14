@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Projects, by Shoofle</title>
+		<link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<link href="../static/shoofle.css" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<div class="project">
+			<h2 class="title">Play for X!</h2>
+			<p>This is a running project I'm working on. Check it out on <a href="http://li60-203.members.linode.com:7777/">another port on this very server</a>, with the caveat that it's not exactly the belle of the ball at the moment. Lately I've not been focusing on the styling and design so much as I've been focusing on...</p>
+			<p>The functionality! The super short version is this:</p>
+			<blockquote>
+				<p>Instead of rolling dice to see if you hit a monster, why not play a minigame instead?</p>
+			</blockquote>
+			<p>Tabletop roleplaying games (my experience is mostly with D&amp;D 3.5, but I've also been playing <a href="http://www.dungeon-world.com/">Dungeon World</a> and someday I want to run or be in a <a href="http://www.mimgames.com/window/">The Window</a> game) have the well-agreed on standard that you use dice to generate random numbers to check whether you succeed on chance-based tasks. This introduces instability into the game, which makes things tense and interesting and prevents the game from playing the same way every time!</p>
+			<p>But the only input the player actually has on how well they do, then, is the gameplay choices which apply various bonuses to their rolls. And that's kinda sucky! Because now that we all have computers, why not do something more interesting: </p>
+			<blockquote>
+				<p>When your character faces a skill-based task, you have to face one as well.</p>
+			</blockquote>
+			<h3>So what <em>is</em> Play for X anyway?</h3>
+			<p>It's a chatroom, plus a bunch of tiny javascript games. You and your friends all log into a room together, and you start playing your game over the voice chat system of your choice. When you (as the DM) decree that a player needs to make a skill check, you simply choose a minigame or microtask from the list, and drag it onto their name. It immediately pops up on their screen, and when they've completed it, their score is posted into the chatroom, and you can make a decision based on how well they did!</p>
+			<p>It's not finished yet. How the various parts of the system talk to each other has changed a bit as I've worked on this - the chat functionality works through websockets, and the games are slated to communicate their results to the client's browser by postMessage passing. This is partially implemented in...</p>
+			<p>The code! The source is available at <a href="http://github.com/shoofle/play-for-x/">the github project play-for-x</a>, and you're entirely welcome to inspect, criticize, suggest, fork, whatever, as you like. I'd be interested in hearing if you do something with it! Some parts are pretty messy, but the games themselves are fun to make.</p> 
+			<h3>Can I check it out?</h3>
+			<p>Sure! If you want to just try the games, you should direct your eyeballs or eyeball-equivalents at <a href="http://li60-203.members.linode.com:7777/games/">this lil' website</a>, which lets you try out the minigames I've made, play with their configurations, and so on. It uses a <a href="http://jsoneditoronline.org">nifty json editor widget</a> that someone made.</p>
+			<hr>
+			<p>One of my favorite things about working on this project is that it really strips out all the cruft that usually comes with working on game projects - I don't need to worry about the engine, I don't need to worry about rendering engines, I don't need to make lots of textures. I explicitly set a goal of never writing a large game for this project. With that requirement in place, I'm totally free to experiment a <em>lot</em>, and just throw together little javascript games in a few hours. Indeed, most of the games you'll see here took me half an afternoon to write! Experimenting with different forms of gameplay, and exploring exactly that side of the craft, is one of my greatest interests.</p>
+		</div>
+	</body>
+</html>

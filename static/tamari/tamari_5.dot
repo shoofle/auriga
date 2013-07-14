@@ -1,0 +1,23 @@
+digraph tamari {
+OOabOcOde -> OOOabcOde;
+OOaOObcde -> OOOaObcde;
+OaOOObcde -> OOaOObcde;
+OaOObcOde -> OaOOObcde;
+OOOabOcde -> OOOOabcde;
+OaObOcOde -> OaOObcOde;
+OOaObcOde -> OOOabcOde;
+OaOObcOde -> OOaObcOde;
+OOabOOcde -> OOOabOcde;
+OaObOcOde -> OOabOcOde;
+OaOObOcde -> OaOOObcde;
+OOaObOcde -> OOOabOcde;
+OOOaObcde -> OOOOabcde;
+OaObOOcde -> OaOObOcde;
+OaOObOcde -> OOaObOcde;
+OaObOcOde -> OaObOOcde;
+OaObOOcde -> OOabOOcde;
+OOaObOcde -> OOaOObcde;
+OOOabcOde -> OOOOabcde;
+OOaObcOde -> OOOaObcde;
+OOabOcOde -> OOabOOcde;
+}

@@ -1,0 +1,98 @@
+article {
+	max-width: 70em;
+}
+article, .project {
+	border: 0.2em solid gray;
+	border-radius: 1em;
+	padding: 0.5em;
+	margin: 0.5em;
+}
+
+.small_project {
+	border: 1px solid gray;
+	border-radius: 1em;
+	height: 10em;
+	padding: 0.5em;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	background-color: #eee;
+}
+
+.description {
+	font-size: large;
+	font-weight: bold;
+}
+.name {
+	font-size: larger;
+}
+
+.game {    background-color: rgb(255, 142, 142); }
+.coding {  background-color: #bdb; }
+.web {     background-color: rgb(255, 255, 153); }
+.art {     background-color: #aae; }
+.writing { background-color: rgb(131, 255, 205); }
+
+
+.important {
+	padding-left: 1%;
+	margin-left: 1%;
+	border-left: 5px solid rgba(0,0,0,0.25);
+}
+
+.sidenote {
+  background-color: rgba(230,230,230,1);
+  padding: 1%;
+  margin: 1% 0% 1% 1%;
+  border-radius: 5px;
+  float: right;
+  clear: right;
+  display: block;
+  font-style: italic;
+  font-size: smaller;
+}
+.sidenote em { font-style: normal;}
+
+.file-tree, .file-tree ul { list-style: none; }
+
+
+/* background and color coding to differentiate URLs and filepaths from surrounding text. */
+.filename, .url {
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 3px;
+}
+/* Don't display the background if it's in a file tree. */
+.file-tree asdf .filename {
+  border: 0;
+  background-color: inherit;
+}
+/* Make sure we can tell filenames and URLs apart. This is useful for talking about how the server works. */
+/* Choosing color schemes is hard :( */
+/* http://colorschemedesigner.com/#3v51Zw0w0w0w0 */
+/*
+Primary Color:
+0A64A4	24577B	03406A	3E94D1	65A5D1
+Secondary Color A:
+2618B1	372F85	120873	594CD8	7B72D8
+Secondary Color B:
+00B945	238B49	00782D	37DC74	63DC90
+*/
+.filename { color: #6c71c4; }
+.filename { color: #e59701; }
+.filename {
+  background-color: rgba(0,0,0,0.85);
+  background-color: #40fd8f;
+  background-color: rgba(64, 253, 132, 0.35);
+  color: black;
+}
+.url { color: #2aa198; }
+.url {
+  background-color: rgba(0,0,0,0.85);
+  background-color: #3ae7ff;
+  background-color: rgba(58, 231, 255, 0.35);
+  color: black;
+}
+/*
+purple ae81ff
+dark violet 6c71c4
+cyan 2aa198
+*/

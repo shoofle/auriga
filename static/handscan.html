@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Shoofle's Test Thing</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<script type="text/javascript" src="../static/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../static/chat.css" />
+		<script type="text/javascript">
+			$(document).ready(function() {
+					$('.scanner').addClass('off');
+					$('.scanner').on('touchstart', function(evt) {
+						$(evt.target).addClass('on').removeClass('off');
+						if ($('.scanner.off').length == 0) {
+							$('.scanner').removeClass('on').addClass('open').off('touchend touchleave').off('touchstart');
+						}
+					}).on('touchend touchleave', function(evt) {
+						$(evt.target).removeClass('on').addClass('off');
+					});
+			});
+		</script>
+		<style type="text/css">
+			.scanner {
+				width: 80%;
+				height: 5em;
+				background-color: gray;
+				border: 1px solid gray;
+				border-radius: 1em;
+				margin: 10%;
+				transition: all 0.5s ease;
+			}
+			.on { background-color: blue; }
+			.open { background-color: green; }
+			.off { background-color: red; }
+			#output { 
+				width: 90%;
+				border: 1px dashed black;
+				border-radius: 1em;
+				background-color: gray;
+				padding: 5%;
+				font-size: large;
+				font-weight: heavy;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="scanner"></div>
+		<div class="scanner"></div>
+		<div class="scanner"></div>
+		<div class="scanner"></div>
+	</body>
+</html>
