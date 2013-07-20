@@ -8,6 +8,14 @@ article, .project {
 	margin: 0.5em;
 }
 
+figure {
+	text-align: center;
+}
+figcaption {
+	font-style: italic;
+	font-family: serif;
+}
+
 .small_project {
 	border: 1px solid gray;
 	border-radius: 1em;
@@ -40,15 +48,15 @@ article, .project {
 }
 
 .sidenote {
-  background-color: rgba(230,230,230,1);
-  padding: 1%;
-  margin: 1% 0% 1% 1%;
-  border-radius: 5px;
-  float: right;
-  clear: right;
-  display: block;
-  font-style: italic;
-  font-size: smaller;
+	background-color: rgba(230,230,230,1);
+	padding: 1%;
+	margin: 1% 0% 1% 1%;
+	border-radius: 5px;
+	float: right;
+	clear: right;
+	display: block;
+	font-style: italic;
+	font-size: smaller;
 }
 .sidenote em { font-style: normal;}
 
@@ -57,13 +65,13 @@ article, .project {
 
 /* background and color coding to differentiate URLs and filepaths from surrounding text. */
 .filename, .url {
-  border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 3px;
+	border: 1px solid rgba(0,0,0,0.05);
+	border-radius: 3px;
 }
 /* Don't display the background if it's in a file tree. */
 .file-tree asdf .filename {
-  border: 0;
-  background-color: inherit;
+	border: 0;
+	background-color: inherit;
 }
 /* Make sure we can tell filenames and URLs apart. This is useful for talking about how the server works. */
 /* Choosing color schemes is hard :( */
@@ -79,17 +87,17 @@ Secondary Color B:
 .filename { color: #6c71c4; }
 .filename { color: #e59701; }
 .filename {
-  background-color: rgba(0,0,0,0.85);
-  background-color: #40fd8f;
-  background-color: rgba(64, 253, 132, 0.35);
-  color: black;
+	background-color: rgba(0,0,0,0.85);
+	background-color: #40fd8f;
+	background-color: rgba(64, 253, 132, 0.35);
+	color: black;
 }
 .url { color: #2aa198; }
 .url {
-  background-color: rgba(0,0,0,0.85);
-  background-color: #3ae7ff;
-  background-color: rgba(58, 231, 255, 0.35);
-  color: black;
+	background-color: rgba(0,0,0,0.85);
+	background-color: #3ae7ff;
+	background-color: rgba(58, 231, 255, 0.35);
+	color: black;
 }
 /*
 purple ae81ff

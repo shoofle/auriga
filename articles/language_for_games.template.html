@@ -1,0 +1,15 @@
+{% extends "articles/article.template.html" %}
+
+{% block title -%}
+Features for a game-focused programming language or library
+{%- endblock %}
+
+{% block body -%}
+<p>I like making games but sometimes I spend a lot of time doing stuff that is just annoying. What if a language or environment were designed to make those things easy?</p>
+<hr>
+{%- include "articles/snorlax_evaluation.article.html" -%}
+<hr>
+{%- include "articles/time_integration.article.html" -%}
+<hr>
+{%- include "articles/easy_peasy_state_machinesy.article.html" -%}
+{%- endblock %}

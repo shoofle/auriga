@@ -1,0 +1,35 @@
+<article>
+	<header>
+		<h1>Time Integration</h1>
+	</header>
+	<p>I find myself writing cooldowns and countdowns all the time. Bullets can only fire so fast, bombs explode after five seconds, enemies spawn every 10-15 seconds. Every time I do it, I write the same boilerplate in the initialization:</p>
+	<pre><code>goomba.cooldown_max = 5 // 5 seconds to cool down
+goomba.cooldown_timer = goomba.cooldown_max</code></pre>
+	<p>and the same boilerplate in the update function:</p>
+	<pre><code>if goomba.cooldown_timer &gt; 0:
+goomba.cooldown_timer -= time_step
+if goomba.cooldown_timer &lt; 0:
+// insert end behavior here</code></pre>
+	<p>and somewhere, I activate this behavior (in response to a keypress, or proximit, or contact):</p>
+	<pre><code>goomba.cooldown_timer = goomba.cooldown_max</code></pre>
+	<p>I do this kind of thing so often that I feel like it should be one of the basic functionalities offered when I'm trying to describe game entity behavior.</p>
+	<pre><code>// initialization
+goomba.shot_timer = new CooldownTimer(length=5s, on_end=function() {...})
+// update functionality should be taken care of automatically, but if not:
+goomba.shot_timer.step(time_step)
+// activating the timer:
+goomba.shot_timer.start()</code></pre>
+	<p>Now, wasn't that easy?</p>
+	<p>Of course, that's a pretty simple case! There are obvious extensions, though:</p>
+	<pre><code>goomba.blink_timer = new EndlessTimer()
+goomba.blink_timer.interval = 5s
+goomba.blink_timer.at_progress(0%, goomba.change_color) // change color at the start of each interval
+goomba.blink_timer.at_progress(50%, goomba.take_step) // take a step once every interval halfway through</code></pre>
+	<p>And now making timed behavior for our goomba is easy! We can even speed up the goomba easily: <code>goomba.blink_timer.interval = 3s</code></p>
+	<p>Ideally, you don't need to even specify when to <code>step</code> your timers - that should be taken care of automatically. Of course, that means we'd want to <em>register</em> these timers instead of simply declaring them as a member - but maybe that's a matter of a grander architectural problem.</p>
+	<p>Although! If we <em>do</em> let the developer take care of stepping the timers, then we can also use it for things that <em>aren't</em> time-dependent:</p>
+	<pre><code>player.limit_bar = new Meter(length=100) // general verison of the CooldownTimer
+player.on('hit by enemy', player.limit_bar.step)
+player.limit_bar.at_progress(100%, player.limit_break)</code></pre>
+	<p>And now we've got a way for limit breaks to engage. Assuming there's a pre-existing event system and everything is architected carefully, it's now incredibly easy to fill meters in response to events.</p>
+</article>

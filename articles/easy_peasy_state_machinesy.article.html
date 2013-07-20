@@ -1,0 +1,36 @@
+<article>
+	<header>
+		<h1>Easy Peasy State Machinesy</h1>
+	</header>
+	<p>Why do I always have to actually use boolean flags (manually setting and unsetting them) to track the states of my entities?</p>
+	<pre>
+<code>player.shielding = new Toggle()
+keyboard.on('w pressed', player.shielding.next)</code></pre>
+	<p>I'm just throwing this syntax together off the top of my head. The syntax isn't important - what's important is that I should be able to describe this and have it happen.</p>
+	<pre>
+<code>strobelight.color = new Sequence(['red', 'green', 'blue'])
+strobelight.update = function(dt) {
+strobelight.color.next()
+strobelight.draw()
+}</code></pre>
+	<p>Seriously, don't worry about this syntax - it's ugly and I just threw it together. The point is the kinds of things I should be able to do. This is all totally feasible.</p>
+	<pre>
+<code>goomba.ai = new StateMachine(['sleep', 'suspicious', 'alert'])
+goomba.ai['sleep'].transitions_to['suspicious'].on(goomba.near(player))
+// the state 'sleep' should transition to 'suspicious' on the event goomba.near(player)
+goomba.ai['sleep'].update = goomba.draw_snores
+
+goomba.ai['suspicious'].transitions_to['alert'].on(goomba.sees(player))
+goomba.ai['suspicious'].update = goomba.search_for_player
+
+// shit we forgot to make a state for just patrolling
+goomba.ai.add_state('patrol')
+goomba.ai['patrol'].transitions_to['sleep'].after(5 seconds)
+goomba.ai['patrol'].update = goomba.wander
+
+// oh hey, she should occasionally wake up to patrol!
+goomba.ai['sleep'].transitions_to['patrol'].after(5-10 seconds)</code></pre>
+	<p>So y'know. State machines are powerful. In order to really use them, you need a robust event system, or else they're a huge pain - it's still possible, you just... need to code it to check the conditions on each update loop. That could get expensive!</p>
+	<p>For the example of checking <code>goomba.near(player)</code> - which has an optional argument for the distance - that function checks if there's already a collision detection object attached to <code>goomba</code> for setting off proximity events. If there is, it returns the event handle, which can be used for binding behaviors to the firing of that event. If a proximity collider of the right size <em>doesn't</em> exist, then it creates one, and returns the event handle.</p>
+	<p></p>
+</article>
