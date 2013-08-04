@@ -9,6 +9,10 @@ bloop = Blueprint("articles", __name__, template_folder="")
 def main_page():
 	return render_template("project_list.html")
 
+@bloop.route("/a/<page_name>/")
+def apply_base_template(page_name):
+	file_name = os.path.join(folder, page_name.replace("-", "_"))
+	
 @bloop.route("/<page_name>/")
 def render_article(page_name):
 	# Arguably, the various options for how to render (templates, articles, flat html) could be stuck into various subdirectories.

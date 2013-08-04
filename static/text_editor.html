@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>A smart, organizing text editor</title>
+		<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<link href="/static/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
+		<link href="/static/shoofle.css" rel="stylesheet" type="text/css">
+		<script src="/static/jquery.min.js" type="text/javascript"></script>
+		<style type="text/css">
+		textarea {
+			width: 100%;
+			margin: 0;
+		}
+		.block {
+			white-space: pre-line;
+			font-family: monospace;
+			background-color: white;
+			padding: 4px;
+		}
+		.block.if {
+			white-space: normal;
+			background-color: rgb(200,200,255);
+		}
+		.branch {
+			background-color: rgb(200,255,200);
+		}
+		.block.while {
+			background-color: rgb(255,200,200);
+		}
+		</style>
+	</head>
+	<body style="background-color: gray; margin: 1em;">
+		<div style="display: none;"></div>
+
+
+When I see the text "if (something)", then I should make a new if block.
+
+["block", "block"] => ["block"]
+["block", "block while"] => ["block", "block while"]
+["block", "block if"] => ["block", "block if"]
+<script type="text/javascript">
+
+finds_if_regex = /(?:^|\s+)(if\s*\([^)]+\)\s*)({[^}]*})/
+function make_new_if(text_area) {
+	if (text_area.is('.block.base')) {
+		var contents = text_area.html();
+		var split_up = contents.split(finds_if_regex);
+		var new_blocks = [];
+		new_blocks.append($('<div></div>').append(split_up[0]).addClass('block base'));
+		for (var i=1; i<split_up.length; i+=3) {
+			var if_container = $('<div></div>').addClass('block if');
+			var branch_container = $('<div></div>').addClass('branch if');
+			var conditional = $('<div></div>').addClass('condition').html(split_up[i]);
+			var result = $('<div></div>').addClass('block base').html(split_up[i+1]);
+			branch_container.append(conditional);
+			branch_container.append(result);
+			if_container.append(branch_container);
+			
+			new_blocks.append(if_container);
+			if (split_up[i+2] != '') {
+				var post_if = $('<div></div>').addClass('block base').html(split_up[i+2]);
+				new_blocks.append(post_if);
+			}
+		}
+	}
+}
+function make_new_else(text_area) {
+
+}
+</script>
+<style type="text/css">
+.block {display: block;}
+.branch {display: inline-block;}
+
+</style>
+<div class="block" id="editor" contentEditable>
+	<div class="block base" >
+		some kind of preparation code, I guess
+		or something
+	</div>
+	<div class="block if">
+		<div class="branch if">
+			<div class="condition">if (condition)</div>
+			<div class="block base">do something in response to a true condition</div>
+		</div>
+		<div class="branch else-if">
+			<div class="condition">else if (some other condition)</div>
+			<div class="block base">then we should do something specific else</div>
+		</div>
+		<div class="branch else">
+			<div class="condition">else</div>
+			<div class="block base">some fallback thing!</div>
+		</div>
+	</div>
+	<div class="block base">
+		some code
+		do other thing
+		{} | : {} ();
+	</div>
+	<div class="block while">
+		<div class="condition">while (something)</div>
+		<div class="block base">
+			update the counters
+			hack the gibsons
+			do the stuff
+		</div>
+	</div>
+</div>
+
+</div>
+
+
+<hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr>
+		<div></div>
+		<div class="block" style="width: 60em;">
+			<textarea></textarea>
+		</div>
+		
+		<pre id="output" style="border: 1px solid black; width: 50%; background-color: rgb(200,200,255);"></div>
+
+		<script type="text/javascript">
+
+// Finds an if block, breaking text up around it into useful subblocks.
+function separate_if_blocks (text_area) {
+	contents = $(text_area).val();
+	search = /([\s\S]*)(if\s*\([^)]+\)\s*)({[^}]*})(\s*else\s*)({[^}]*})([\s\S]*)/.exec(contents);
+	if (search) {
+		return {
+			'found': true,
+			'before': search[1],
+			'the_if': search[2],
+			'true_block': search[3],
+			'the_else': search[4],
+			'false_block': search[5],
+			'after': search[6],
+		};
+	} else {
+		return {'found': false,};
+	}
+}
+function textarea_change_listener(event) {
+	var text_area = $(event.target);
+	
+	format_block(text_area.parents('.block'), into=$('#output'));
+
+	var s = separate_if_blocks(text_area);
+	console.log(s);
+	if (s.found) {
+		var block = text_area.parent('.block')
+		var before = $('<textarea>' + s.before + '</textarea>');
+		var true_block = $('<div class="block true" />').append(
+			$('<textarea>' + s.the_if + '</textarea>').addClass('if-condition')
+			).append(
+			$('<textarea>' + s.true_block + '</textarea>').addClass('if-code')
+			);
+		var else_block = $('<div class="block false" />').append(
+			$('<textarea>' + s.the_else + '</textarea>').addClass('else-condition')
+			).append(
+			$('<textarea>' + s.false_block + '</textarea>').addClass('else-code')
+			);
+		var after = $('<textarea>' + s.after + '</textarea>');
+		block.append(before, true_block, else_block, after);
+		text_area.remove();
+	}
+}
+
+function format_block (from, into) {
+	if (from.length > 1) { return; }
+	contents = '';
+	from.find('textarea,.block').each(function (index, element) {
+		if ($(element).is('textarea')) {
+			contents += $(element).val();
+		} else {
+			contents += format_block($(element));
+		}
+	});
+	if (into == undefined) {
+		return contents;
+	} else {
+		into.html(contents);
+	}
+}
+$(document).ready(function () {
+	$('#editor').on('input', '.block.base', make_new_if);
+});
+		</script>
+	</body>
+</html>
