@@ -13,7 +13,6 @@
 			margin: 0;
 		}
 		.block {
-			white-space: pre-line;
 			font-family: monospace;
 			background-color: white;
 			padding: 4px;
@@ -41,33 +40,7 @@ When I see the text "if (something)", then I should make a new if block.
 ["block", "block if"] => ["block", "block if"]
 <script type="text/javascript">
 
-finds_if_regex = /(?:^|\s+)(if\s*\([^)]+\)\s*)({[^}]*})/
-function make_new_if(text_area) {
-	if (text_area.is('.block.base')) {
-		var contents = text_area.html();
-		var split_up = contents.split(finds_if_regex);
-		var new_blocks = [];
-		new_blocks.append($('<div></div>').append(split_up[0]).addClass('block base'));
-		for (var i=1; i<split_up.length; i+=3) {
-			var if_container = $('<div></div>').addClass('block if');
-			var branch_container = $('<div></div>').addClass('branch if');
-			var conditional = $('<div></div>').addClass('condition').html(split_up[i]);
-			var result = $('<div></div>').addClass('block base').html(split_up[i+1]);
-			branch_container.append(conditional);
-			branch_container.append(result);
-			if_container.append(branch_container);
-			
-			new_blocks.append(if_container);
-			if (split_up[i+2] != '') {
-				var post_if = $('<div></div>').addClass('block base').html(split_up[i+2]);
-				new_blocks.append(post_if);
-			}
-		}
-	}
-}
-function make_new_else(text_area) {
 
-}
 </script>
 <style type="text/css">
 .block {display: block;}
@@ -76,8 +49,8 @@ function make_new_else(text_area) {
 </style>
 <div class="block" id="editor" contentEditable>
 	<div class="block base" >
-		some kind of preparation code, I guess
-		or something
+		some kind of preparation code, I guess<br>
+		or something<br>
 	</div>
 	<div class="block if">
 		<div class="branch if">
@@ -94,16 +67,16 @@ function make_new_else(text_area) {
 		</div>
 	</div>
 	<div class="block base">
-		some code
-		do other thing
-		{} | : {} ();
+		some code<br>
+		do other thing<br>
+		{} | : {} ();<br>
 	</div>
 	<div class="block while">
 		<div class="condition">while (something)</div>
 		<div class="block base">
-			update the counters
-			hack the gibsons
-			do the stuff
+			update the counters<br>
+			hack the gibsons<br>
+			do the stuff<br>
 		</div>
 	</div>
 </div>
@@ -121,68 +94,58 @@ function make_new_else(text_area) {
 
 		<script type="text/javascript">
 
-// Finds an if block, breaking text up around it into useful subblocks.
-function separate_if_blocks (text_area) {
-	contents = $(text_area).val();
-	search = /([\s\S]*)(if\s*\([^)]+\)\s*)({[^}]*})(\s*else\s*)({[^}]*})([\s\S]*)/.exec(contents);
-	if (search) {
-		return {
-			'found': true,
-			'before': search[1],
-			'the_if': search[2],
-			'true_block': search[3],
-			'the_else': search[4],
-			'false_block': search[5],
-			'after': search[6],
-		};
-	} else {
-		return {'found': false,};
-	}
-}
-function textarea_change_listener(event) {
-	var text_area = $(event.target);
-	
-	format_block(text_area.parents('.block'), into=$('#output'));
+var finds_if_regex = /(?:^|\s+)(if\s*\([^)]+\)\s*)(\{[^}]*\})/
+function make_new_if(c1, c2) {
+	var thingeroo;
+	if (c1 == undefined) { thingeroo = $(this); }
+	if (c2 == undefined) { thingeroo = $(c1); }
+	else { thingeroo = $(c2); }
 
-	var s = separate_if_blocks(text_area);
-	console.log(s);
-	if (s.found) {
-		var block = text_area.parent('.block')
-		var before = $('<textarea>' + s.before + '</textarea>');
-		var true_block = $('<div class="block true" />').append(
-			$('<textarea>' + s.the_if + '</textarea>').addClass('if-condition')
-			).append(
-			$('<textarea>' + s.true_block + '</textarea>').addClass('if-code')
-			);
-		var else_block = $('<div class="block false" />').append(
-			$('<textarea>' + s.the_else + '</textarea>').addClass('else-condition')
-			).append(
-			$('<textarea>' + s.false_block + '</textarea>').addClass('else-code')
-			);
-		var after = $('<textarea>' + s.after + '</textarea>');
-		block.append(before, true_block, else_block, after);
-		text_area.remove();
-	}
-}
-
-function format_block (from, into) {
-	if (from.length > 1) { return; }
-	contents = '';
-	from.find('textarea,.block').each(function (index, element) {
-		if ($(element).is('textarea')) {
-			contents += $(element).val();
-		} else {
-			contents += format_block($(element));
+	if (!thingeroo.is('.block.base')) {
+		thingeroo.find('.block.base').each(make_new_if);
+	} else if (finds_if_regex.exec(thingeroo.html())) {
+		var contents = thingeroo.html();
+		var split_up = contents.split(finds_if_regex);
+		var new_blocks = [];
+		new_blocks.push($('<div></div>').append(split_up[0]).addClass('block base'));
+		for (var i=1; i<split_up.length; i+=3) {
+			var if_container = $('<div></div>').addClass('block if');
+			var branch_container = $('<div></div>').addClass('branch if');
+			var conditional = $('<div></div>').addClass('condition').html(split_up[i]);
+			var result = $('<div></div>').addClass('block base').html(split_up[i+1]);
+			branch_container.append(conditional);
+			branch_container.append(result);
+			if_container.append(branch_container);
+			
+			new_blocks.push(if_container);
+			if (split_up[i+2] != '') {
+				var post_if = $('<div></div>').addClass('block base').html(split_up[i+2]);
+				new_blocks.push(post_if);
+			}
 		}
-	});
-	if (into == undefined) {
-		return contents;
-	} else {
-		into.html(contents);
+		thingeroo.after(new_blocks);
+		console.log(new_blocks);
+		thingeroo.remove();
 	}
+}
+function make_new_else(container) {
+
+}
+var collapsible_block_selector = '.block.base';
+var cbs = collapsible_block_selector;
+function collapse_neighbors(container) {
+	container = $(container);
+	container.find('.block.base + .block.base').each(function () {
+		var base = $(this).prev('.block.base');
+		var target = $(this);
+		var new_base_contents = base.html() + '<br>' + target.html();
+		base.html(new_base_contents);
+		target.remove();
+	});
 }
 $(document).ready(function () {
-	$('#editor').on('input', '.block.base', make_new_if);
+	$('#editor').on('input', function() { make_new_if($(this)); });
+	$('#editor').on('input', function() { collapse_neighbors($(this)); });
 });
 		</script>
 	</body>
