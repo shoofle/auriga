@@ -94,17 +94,17 @@ When I see the text "if (something)", then I should make a new if block.
 
 		<script type="text/javascript">
 
-var finds_if_regex = /(?:^|\s+)(if\s*\([^)]+\)\s*)(\{[^}]*\})/
+var finds_if_regex = /(?:\s*)(if\s*\([^)]+\)\s*)(\{[^}]*\})/;
 function make_new_if(c1, c2) {
-	var thingeroo;
-	if (c1 == undefined) { thingeroo = $(this); }
-	if (c2 == undefined) { thingeroo = $(c1); }
-	else { thingeroo = $(c2); }
+	var target;
+	if (c1 == undefined) { target = $(this); }
+	if (c2 == undefined) { target = $(c1); }
+	else { target = $(c2); }
 
-	if (!thingeroo.is('.block.base')) {
-		thingeroo.find('.block.base').each(make_new_if);
-	} else if (finds_if_regex.exec(thingeroo.html())) {
-		var contents = thingeroo.html();
+	if (!target.is('.block.base')) {
+		target.find('.block.base').each(make_new_if);
+	} else if (finds_if_regex.exec(target.html())) {
+		var contents = target.html();
 		var split_up = contents.split(finds_if_regex);
 		var new_blocks = [];
 		new_blocks.push($('<div></div>').append(split_up[0]).addClass('block base'));
@@ -123,30 +123,48 @@ function make_new_if(c1, c2) {
 				new_blocks.push(post_if);
 			}
 		}
-		thingeroo.after(new_blocks);
+		target.after(new_blocks);
 		console.log(new_blocks);
-		thingeroo.remove();
+		target.remove();
 	}
 }
-function make_new_else(container) {
+var finds_else_regex = /(?:[^\S])\s*else\s*(\{[^}]*\})/;
+function make_new_else(c1, c2) {
+	var target;
+	if (c1 == undefined) { target = $(this); }
+	if (c2 == undefined) { target = $(c1); }
+	else { target = $(c2); }
 
+	if (!target.is('.block.base')) {
+		target.find('.block.base')
+	}
 }
 var collapsible_block_selector = '.block.base';
+var empty_text_regex = /\S/
 var cbs = collapsible_block_selector;
-function collapse_neighbors(container) {
-	container = $(container);
-	container.find('.block.base + .block.base').each(function () {
+function collapse_blocks(c1, c2) {
+	var target;
+	if (c1 == undefined) { target = $(this); }
+	if (c2 == undefined) { target = $(c1); }	
+	else { target = $(c2); }
+
+	target.find('.block.base').filter(function() { return !empty_text_regex.exec($(this).text()); }).remove();
+	target.find('.block.base + .block.base').each(function () {
 		var base = $(this).prev('.block.base');
-		var target = $(this);
-		var new_base_contents = base.html() + '<br>' + target.html();
+		var new_base_contents = base.html() + '<br>' + $(this).html();
 		base.html(new_base_contents);
-		target.remove();
+		$(this).remove();
 	});
+	target.children().each(collapse_blocks);
 }
 $(document).ready(function () {
 	$('#editor').on('input', function() { make_new_if($(this)); });
-	$('#editor').on('input', function() { collapse_neighbors($(this)); });
+	$('#editor').on('input', function() { collapse_blocks($(this)); });
 });
+
+
+
+
 		</script>
 	</body>
 </html>
