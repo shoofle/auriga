@@ -122,4 +122,56 @@ number = contents:[0-9]+ { return parseInt(contents.join(""), 10); }
 			<code class="line">// So yeah</code>
 		</div>
 	</div>
+	<p>I just keep writing grammars! Thanks, <a href="http://pegjs.majda.cz/online">pegjs!</a></p>
+	<pre><code class="language-grammar">
+block = "{" contents:lines "}" { return contents; }
+
+lines = 
+  contents:(whitespace (branch / line) whitespace)*
+  { var output = [];
+    for (var i=0; i&lt;contents.length; i++) { output.push(contents[i][1]); }
+    return output; }
+
+branch = 
+   main:if_branch elseifs:elseif_branch* elses:else_branch?
+   { var output = [main];
+     if (elseifs.length &gt; 0) { output = output.concat(elseifs); }
+     if (elses) { output.push(elses); }
+     return output; }
+
+if_branch = whitespace cond:if_line whitespace body:block
+  { return {type: "if", condition: cond, consequent: body}; }
+if_line = "if" whitespace "(" condition:line ")" { return condition; }
+
+elseif_branch = whitespace cond:elseif_line whitespace body:block
+  { return {type: "else if", condition: cond, consequent: body}; }
+elseif_line = "else if" whitespace "(" condition:line ")" { return condition; }
+
+else_branch = whitespace cond:else_line whitespace body:block
+  { return {type: "else", condition: cond, consequent: body}; }
+else_line = "else" { return "else"; }
+
+
+line = start:word rest:(" "* word)* 
+  { var output = start;
+    for (var i=0; i&lt;rest.length; i++) { output += rest[i][0].join("") + rest[i][1]; }
+    return output; }
+word = c:[A-Za-z]+ { return c.join(""); }
+whitespace = (" " / "\n")*
+	</code></pre>
+	<p>Okay, and here's another lisp one, because they're so easy and satisfying:</p>
+	<pre><code class="language-grammar">
+expression = whitespace e:(parenthetical / string_literal / number / identifier) whitespace
+ { return e; }
+
+parenthetical = "(" sequence:expression* ")" { return sequence; }
+
+string_literal = 
+   "'" characters:[^']* "'" { return characters.join(""); }
+ / '"' characters:[^"]* '"' { return characters.join(""); }
+number = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
+identifier = letters:[A-Za-z]+ { return letters.join(""); }
+
+whitespace = [ \n\t]*
+	</code></pre>
 </article>
