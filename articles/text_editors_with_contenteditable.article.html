@@ -1,6 +1,7 @@
 <article>
 	<p>I've been playing with an exciting feature of HTML5 that I hadn't heard of: the <code class="language-html">contentEditable</code> attribute. It's magical! It just makes anything suddenly be editable in-browser! It also finally provides me with the thing I've been wanting ever since growing dissatisfied with text editors: A way to build a <em>new</em> text editor, <em>without</em> having to actually code up the guts of text movement, manipulation, and entry. Oh, happy day!</p>
 	<p>More on this as the situation progresses.</p>
+	<pre><code class="language-grammar">
 /*
  * This is my parser.
  * It's not much, but it's mine.
@@ -10,21 +11,115 @@ blocks = code:(if_block / lines)* { return code; }
 
 if_block = 
   "if" ws "(" cond:string ")" ws "{" result:lines "}" 
-  { return {type: "if", condition: cond, body: result }; }
+{ return {type: "if", condition: cond, body: result }; }
 
 /*
 while_block = "while" ws "(" cond:string ")" ws "{" result:lines "}"
-  { return {type: "while", condition: cond, body: result }; }
+{ return {type: "while", condition: cond, body: result }; }
 */
 
 lines = lines:line+ ws?
-  { return lines; }
+{ return lines; }
 
 line = ws? contents:string ";"
-  { return contents; }
+{ return contents; }
 
 ws = (" " / "\n")+ { return ""; }
 
-string = characters:([A-Za-z]+ [A-Za-z ]*) { return characters.join(""); }
 
+string = characters:([A-Za-z] [0-9A-Za-z "']*) 
+{ return characters[0] + characters[1].join(""); }
+	</code></pre>
+	<p>Then I started realizing I had no idea what I was doing. So I started defining the grammar for a Lisp! Sort of. More or less.</p>
+	<pre><code class="language-grammar">
+expression = 
+   parenthetical
+ / bracketed
+ / identifier
+ / string
+ / number
+
+parenthetical = 
+"(" cons: expression? cdr:(" "+ expression)* ")"
+{ 
+  var output = [];
+  for (var i=0; i&lt;cdr.length; i++) { 
+    output.push(cdr[i][1]); 
+  }
+  return {type: "parenthetical", first: cons, rest: output}; 
+}
+
+bracketed = 
+"[" cons: expression? cdr: (" "+ expression)* "]"
+{ 
+  var output = [cons];
+  for (var i=0; i&lt;cdr.length; i++) { 
+    output.push(cdr[i][1]); 
+  }
+  return output;
+  return {type: "list", contents: output}; 
+}
+
+identifier = contents:[A-Za-z]+ { return contents.join(""); }
+
+string = 
+  '"' contents:[^"]* '"' { return contents.join(""); }
+/ "'" contents:[^']* "'" { return contents.join(""); }
+
+number = contents:[0-9]+ { return parseInt(contents.join(""), 10); }
+	</code></pre>
+	<p>Perhaps the answer is to break up the editor's coding space by lines, as webkit is wont to do. Specifically, this would be good because it'd make it easier to track the cursor position, because it would never change relative to the line element it's contained in!</p>
+	<style type="text/css">
+		#editor div {
+			margin-left: 1em;
+		}
+		.block>code.line {
+			display: block;
+			margin-left: 1em;
+		}
+		.if>.branch {
+			display: inline-block;
+		}
+	</style>
+	<div id="editor">
+		<div class="block">
+			<code class="line">// a comment!</code>
+			<code class="line">var a = 5;</code>
+			<code class="line">var b = foo(a); </code>
+			<div class="if block">
+				<div class="if branch">
+					<div class="condition">
+						if (<code class="line">b &gt; 100 &amp;&amp; b / 7 == 3</code>)
+					</div>
+					<div class="block">
+						{
+						<code class="line">// Some results should take place</code>
+						<code class="line">b += 294800;</code>
+						}
+					</div>
+				</div>
+				<div class="elseif branch">
+					<div class="condition">
+						elseif (<code class="line">b &lt; 20</code>)
+					</div>
+					<div class="block">
+						{
+						<code class="line">b -= 1;</code>
+						}
+					</div>
+				</div>
+				<div class="else branch">
+					<div class="condition">
+						else
+					</div>
+					<div class="block">
+						{
+						<code class="line">raise UgnaughtException();</code>
+						}
+					</div>
+				</div>
+			</div>
+			<code class="line">// So yeah</code>
+		</div>
+	</div>
 </article>
