@@ -174,4 +174,34 @@ identifier = letters:[A-Za-z]+ { return letters.join(""); }
 
 whitespace = [ \n\t]*
 	</code></pre>
+	<p>So, it nearly killed me, but I managed to figure out how to make a parser (using pegjs) that <em>actually parses indentation-based grammars!</em> The basic way it works is that as it matches a line, it reads in the number of spaces before it. Using that, it figures out what indentation level it's at - then, as it's returning the line's payload, it puts the payload into the right code block. It's hacky and awful but I think I understand how it works. I'd rather move the logic into the <code>block</code> rule rather than the <code>line</code> rule, but that's pretty simple in theory. Here you go:
+	<pre><code>
+{ var code = [];
+  var indentations = [0];
+  var current_head = [code]; }
+
+b = line* { return code; }
+line = 
+  (spaces:" "* &amp; 
+  { var level = spaces.length;
+    if (level &gt; indentations[indentations.length-1]) {
+      indentations.push(level);
+      var new_block = [];
+      current_head[current_head.length-1].push(new_block);
+      current_head.push(new_block)
+    } else if (indentations.indexOf(level) == -1) {
+      return false; 
+    } else {
+      while (indentations[indentations.length-1] != level) {
+        indentations.pop()
+        current_head.pop()
+      }
+    }
+    return true; } 
+  { return spaces.length; })
+  payload:("ab" bs:"b"+ "a" { return "ab" + bs.join("") + "a"; }) 
+  "\n"
+  { current_head[current_head.length-1].push(payload);
+    return payload; }
+	</code></pre>
 </article>
