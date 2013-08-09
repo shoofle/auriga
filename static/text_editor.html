@@ -8,124 +8,96 @@
 		<link href="/static/shoofle.css" rel="stylesheet" type="text/css">
 		<script src="/static/jquery.min.js" type="text/javascript"></script>
 		<style type="text/css">
-		textarea {
-			width: 100%;
+		body {
+			background-color: gray;
+			margin: 1em;
+		}
+		#editor p {
 			margin: 0;
 		}
 		.block {
 			font-family: monospace;
 			background-color: white;
 			padding: 4px;
+			display: block;
 		}
-		.block.if {
+		.if-elseif-else-wrapper {
 			white-space: normal;
 			background-color: rgb(200,200,255);
 		}
 		.branch {
+			margin-right: 4px;
 			background-color: rgb(200,255,200);
+			display: inline-block;
 		}
-		.block.while {
+		.while-wrapper {
 			background-color: rgb(255,200,200);
 		}
 		</style>
 	</head>
 	<body style="background-color: gray; margin: 1em;">
-		<div style="display: none;"></div>
-
-
-When I see the text "if (something)", then I should make a new if block.
-
-["block", "block"] => ["block"]
-["block", "block while"] => ["block", "block while"]
-["block", "block if"] => ["block", "block if"]
-<script type="text/javascript">
-
-
-</script>
-<style type="text/css">
-.block {display: block;}
-.branch {display: inline-block;}
-
-</style>
-<div class="block" id="editor" contentEditable>
-	<div class="block base" >
-		some kind of preparation code, I guess<br>
-		or something<br>
-	</div>
-	<div class="block if">
-		<div class="branch if">
-			<div class="condition">if (condition)</div>
-			<div class="block base">do something in response to a true condition</div>
+		<div class="block" id="editor" contentEditable>
+			<p class="code">some kind of preparation code, I guess</p>
+			<p class="code">or something</p>
+			<div class="branch if">
+				<p class="condition">if (condition)</p>
+				<div class="block base">
+					<p>do something in response to a true condition</p>
+				</div>
+			</div>
+			<div class="branch else-if">
+				<p class="condition">else if (some other condition)</p>
+				<div class="block base">
+					<p>then we should do something specific else</p>
+				</div>
+			</div>
+			<div class="branch else">
+				<p class="condition">else</p>
+				<div class="block base">
+					<p>some fallback thing!</p>
+				</div>
+			</div>
+			<p>some code</p>
+			<p>do other thing</p>
+			<p>{} | : {} ();</p>
+			<div class="while-wrapper">
+				<p class="condition">while (something)</p>
+				<div class="block base">
+					<p>update the counters</p>
+					<p>hack the gibsons</p>
+					<p>do the stuff</p>
+				</div>
+			</div>
 		</div>
-		<div class="branch else-if">
-			<div class="condition">else if (some other condition)</div>
-			<div class="block base">then we should do something specific else</div>
-		</div>
-		<div class="branch else">
-			<div class="condition">else</div>
-			<div class="block base">some fallback thing!</div>
-		</div>
-	</div>
-	<div class="block base">
-		some code<br>
-		do other thing<br>
-		{} | : {} ();<br>
-	</div>
-	<div class="block while">
-		<div class="condition">while (something)</div>
-		<div class="block base">
-			update the counters<br>
-			hack the gibsons<br>
-			do the stuff<br>
-		</div>
-	</div>
-</div>
-
-</div>
-
-
-<hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr><hr>
-		<div></div>
-		<div class="block" style="width: 60em;">
-			<textarea></textarea>
-		</div>
-		
-		<pre id="output" style="border: 1px solid black; width: 50%; background-color: rgb(200,200,255);"></div>
 
 		<script type="text/javascript">
 
-var finds_if_regex = /(?:\s*)(if\s*\([^)]+\)\s*)(\{[^}]*\})/;
-function make_new_if(c1, c2) {
-	var target;
-	if (c1 == undefined) { target = $(this); }
-	if (c2 == undefined) { target = $(c1); }
-	else { target = $(c2); }
+var finds_if_regex = /(?:\s*)((?:else\s*)?if\s*\([^)]+\)\s*)\{([^}]*)\}/;
+function respond_to_ifs() {
+	var editor = $('#editor');
 
-	if (!target.is('.block.base')) {
-		target.find('.block.base').each(make_new_if);
-	} else if (finds_if_regex.exec(target.html())) {
-		var contents = target.html();
-		var split_up = contents.split(finds_if_regex);
-		var new_blocks = [];
-		new_blocks.push($('<div></div>').append(split_up[0]).addClass('block base'));
-		for (var i=1; i<split_up.length; i+=3) {
-			var if_container = $('<div></div>').addClass('block if');
-			var branch_container = $('<div></div>').addClass('branch if');
-			var conditional = $('<div></div>').addClass('condition').html(split_up[i]);
-			var result = $('<div></div>').addClass('block base').html(split_up[i+1]);
-			branch_container.append(conditional);
-			branch_container.append(result);
-			if_container.append(branch_container);
-			
-			new_blocks.push(if_container);
-			if (split_up[i+2] != '') {
-				var post_if = $('<div></div>').addClass('block base').html(split_up[i+2]);
-				new_blocks.push(post_if);
-			}
-		}
-		target.after(new_blocks);
-		console.log(new_blocks);
-		target.remove();
+	var lines_of_code = editor.find('p');
+	lines_of_code.each(individual_line_if);
+}
+function individual_line_if() {
+	if (!finds_if_regex.exec($(this).text())) { return true; }
+	var split_up = $(this).text().split(finds_if_regex);
+	
+	var branch = $('<div></div>').addClass('branch if');
+	$(this).before(branch);
+	
+	if (split_up[0].length > 0) {
+		branch.before($('<p></p>').text(split_up[0]));
+	}
+	
+	branch.append($('<p class="condition"></p>').text(split_up[1]));
+	branch.append($('<div></div>').addClass('block').append($(this)));
+	$(this).before('{');
+	$(this).text(split_up[2]);
+	$(this).after('}');
+
+	if (split_up[3].length > 0) {
+		branch.after($('<p></p>').text(split_up[2]));
 	}
 }
 var finds_else_regex = /(?:[^\S])\s*else\s*(\{[^}]*\})/;
@@ -139,32 +111,10 @@ function make_new_else(c1, c2) {
 		target.find('.block.base')
 	}
 }
-var collapsible_block_selector = '.block.base';
-var empty_text_regex = /\S/
-var cbs = collapsible_block_selector;
-function collapse_blocks(c1, c2) {
-	var target;
-	if (c1 == undefined) { target = $(this); }
-	if (c2 == undefined) { target = $(c1); }	
-	else { target = $(c2); }
 
-	target.find('.block.base').filter(function() { return !empty_text_regex.exec($(this).text()); }).remove();
-	target.find('.block.base + .block.base').each(function () {
-		var base = $(this).prev('.block.base');
-		var new_base_contents = base.html() + '<br>' + $(this).html();
-		base.html(new_base_contents);
-		$(this).remove();
-	});
-	target.children().each(collapse_blocks);
-}
 $(document).ready(function () {
-	$('#editor').on('input', function() { make_new_if($(this)); });
-	$('#editor').on('input', function() { collapse_blocks($(this)); });
+	$('#editor').on('input', function() { respond_to_ifs(); });
 });
-
-
-
-
 		</script>
 	</body>
 </html>
