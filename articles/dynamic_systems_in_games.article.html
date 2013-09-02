@@ -1,0 +1,66 @@
+<article>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<h1>Dynamic Systems in Games</h1>
+<p>Here, take a look at this simple game I coded up. Your task is to keep an engine's temperature as high as possible, to maximize power output, without dmaaging the engine. The threshhold for damage is at <span data-var="damage_threshhold">10</span> degrees, and the engine will stop burning and deignite if it goes under <span data-var="ignition_threshhold">2</span> degrees.</p>
+<div class="row-fluid">
+	<div id="fuel-management-1" class="span4 offset4">
+		<script type="text/javascript">
+			(function (element) {
+				var container = $(element);
+				var T = {
+					"update": function () {
+						this.value += RR.value*timestep/1000;
+						this.value -= this.value*temperature_decay*timestep/1000;
+						if (this.value < 0) { this.value = 0; }
+					},
+					"out": function () {
+						container.find('#temp-out').html(this.value.toFixed(2));
+						if (this.value > damage_threshhold) { container.find('#damage').show();} 
+						else { container.find('#damage').hide(); }
+						if (this.value < ignition_threshhold) { container.find('#noignition').show(); } 
+						else { container.find('#noignition').hide(); }
+					},
+					"value": 0,
+				};
+				var F = {
+					"update": function () { this.value = container.find('[name=fuel]').val(); },
+					"out": function () {},
+					"value": 0,
+				};
+				var RR = {
+					"update": function () { this.value = T.value * F.value; },
+					"out": function () {},
+					"value": 0,
+				};
+
+				var ignition_threshhold = 2;
+				var damage_threshhold = 10;
+				var temperature_decay = 0.5;
+				var timestep=10;
+
+				var quantities = [T, F, RR];
+				var a, b;
+
+				$(element).ready(function () {
+					container.find('[name=ignition]').on('click', function() { T.value = T.value + 5; });
+					a = setInterval(jQuery.each, timestep, quantities, function() { this.update(); });
+					b = setInterval(jQuery.each, timestep, quantities, function() { this.out(); });
+				});
+				return {
+					'container': container,
+					'quantities': quantities,
+				};
+			})($('#fuel-management-1'));
+		</script>
+		<div id="flow_rate">
+			<label for="fuel">Fuel Flow Rate</label>
+			<input type="range" name="fuel" min=0 max=1 step=0.01 value=.8>
+		</div>
+		<input type="button" name="ignition" value="Ignite!">
+		<span><span id="temp-out">0</span> degrees</span>
+		<span id="noignition" class="label label-info">No ignition</span>
+		<span id="damage" class="label label-warning">DAMAGE!</span>
+	</div>
+</div>
+<p>It's interesting! The fundamental relationship here is \[\frac{\partial T}{\partial t} = c_{F} T F - c_{T} (T - T_{0})\]</p>
+</article>
