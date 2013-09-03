@@ -22,8 +22,8 @@ def render_file(page_name):
 	"""Does nothing. Not really sure why I have this."""
 	file_name = os.path.join(folder, page_name.replace("-", "_"))
 	
-@bloop.route("/<page_name>/")
-def render_article(page_name):
+@bloop.route("/<article_name>/")
+def render_article(article_name):
 	"""Renders a requested article! This should always be @routed last, because it catches a 
 	wide variety of requests. As a result, other things need to be @routed first, because they 
 	might never get called if this catches them first."""
@@ -35,7 +35,7 @@ def render_article(page_name):
 
 	# First, we convert the important part of the requested page into a filename
 	# "example.com/Some-Article/" => folder="Some-Article" => file_name = "articles/some_article"
-	file_name = os.path.join(folder, page_name.replace("-", "_").lower())
+	file_name = os.path.join(folder, article_name.replace("-", "_").lower())
 
 	# Here's the priority list for file rendering!
 	if os.path.isfile(file_name + ".template.html"):
@@ -64,6 +64,34 @@ def render_article(page_name):
 
 	# If we didn't find any files, throw up a 404.
 
+	abort(404)
+
+@bloop.route("/<article_name>/<path:file_path>")
+def supplementary(article_name, file_path):
+	"""Sends a file such that articles can have supplementary content.
+
+	The article at "example.com/great-articles" will have its article fragment HTML defined at
+	"articles/great_articles.article.html" and its supplementary content will be found in the folder
+	"articles/great_articles/some_image.jpg".
+	
+	Oh, and one last thought - if we want more complicated supplementary content behaviors, it might be
+	necessary to make a blueprint for it. Then, it's necessary to include the blueprint in this file. Oh well.
+	"""
+	# Put the article name into the standard form, and concatenate them together.
+	article_name = page_name.replace("-", "_").lower()
+	
+	# You could make a strong argument that this is unnecessary, and we could just shove in a static file handler.
+	# But I like this solution more. It better separates out the supplementary content from the article itself.
+	# Things that don't fit into this framework might not belong as articles, anyway!
+	path = os.path.join(article_name, file_path)
+	print("trying to render supplementary stuff at /{an}/{p}/".format(article_name, file_path))
+	# If the path exists and is a file, then we should send it.
+	if os.path.isfile(path):
+		directory, file_name = os.path.split(path)
+		abort(420)
+		return send_from_directory(directory, file_name)
+
+	# If that file wasn't found, then, well, whoops.
 	abort(404)
 
 """Th-th-th-that's all, folks!"""

@@ -1,11 +1,13 @@
 <article>
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="/static/flot/jquery.flot.js"></script>
+<script type="text/javascript" src="/static/flot/jquery.flot.resize.js"></script>
 <h1>Dynamic Systems in Games</h1>
 <p>Here, take a look at this simple game I coded up. Your task is to keep an engine's temperature as high as possible, to maximize power output, without dmaaging the engine. The threshhold for damage is at <span data-var="damage_threshhold">10</span> degrees, and the engine will stop burning and deignite if it goes under <span data-var="ignition_threshhold">2</span> degrees.</p>
 <div class="row-fluid">
 	<div id="fuel-management-1" class="span4 offset4">
 		<script type="text/javascript">
-			(function (element) {
+			var first_graph = (function (element) {
 				var container = $(element);
 				var T = {
 					"update": function () {
@@ -24,7 +26,7 @@
 				};
 				var F = {
 					"update": function () { this.value = container.find('[name=fuel]').val(); },
-					"out": function () {},
+					"out": function () { update_graph_one(this.value); },
 					"value": 0,
 				};
 				var RR = {
@@ -54,7 +56,7 @@
 		</script>
 		<div id="flow_rate">
 			<label for="fuel">Fuel Flow Rate</label>
-			<input type="range" name="fuel" min=0 max=1 step=0.01 value=.8>
+			<input type="range" name="fuel" min=0 max=2 step=0.01 value=.8>
 		</div>
 		<input type="button" name="ignition" value="Ignite!">
 		<span><span id="temp-out">0</span> degrees</span>
@@ -62,5 +64,29 @@
 		<span id="damage" class="label label-warning">DAMAGE!</span>
 	</div>
 </div>
-<p>It's interesting! The fundamental relationship here is \[\frac{\partial T}{\partial t} = c_{F} T F - c_{T} (T - T_{0})\]</p>
+<p>It's interesting! Or maybe it's not. I threw this together trying to think of what an interesting way for an engine to work might be. The fundamental relationship here is:</p>
+\[\frac{\partial T}{\partial t} = c_F T F - c_T (T - T_0)\]
+<p>That is, at any given moment, the temperature is changing (\(\frac{\partial T}{\partial t}\)) by increasing proportional to the temperature times the fuel flow rate (\(c_F T F\)) and decreasing proportional to the difference between the chamber temperature and the ambient temperature (\(c_T (T - T_0)\)). The deignition isn't described in this formula, but it's pretty simple - the \(c_F T F\) factor becomes zero when the temperature is less than <span data-var="ignition_threshhold">2</span> degrees.</p>
+<p>As it turns out, (surprise of surprises!) that description in a formula is pretty useless for actually understanding how this feels. The key was to look at it as a function of the temperature. See, the player changes \(F\), and I want to get a feel for how the temperature's going to change. So I made a graph with respect to \(T\) where the slope is given by \(\frac{\partial T}{\partial t}\). <span class="sidenote">Note that this is not just going to undo the partial derivative. In this graph, we're integrating against \(T\), not \(t\). Roughly, this graph should be thought of as one where the temperature would slide down hills. Anyway.</span></p>
+<script type="text/javascript">
+	var data=[], step_size=0.5, area;
+	var config = { xaxis: { min:0, max:15 }, yaxis: { min:-5, max:5} };
+	var fn = function(T,F) {
+		if (T < 2) { return -0.5*T; } // ignition threshhold
+		return T*F - 0.5*T;
+	}
+	function update_graph_one(F) {
+		area = 0; data=[];
+		for (var i=0; i<15; i+= step_size) {
+			area = area - step_size*fn(i, F); // fuel flow rate is 0.7
+			data.push([i, area])
+		}
+		$('#first_temperature_fake_potential_graph').data('plot').setData([data]);
+		$('#first_temperature_fake_potential_graph').data('plot').draw();
+	}
+	$(document).ready(function() { $('#first_temperature_fake_potential_graph').plot([[]], config); });
+</script>
+<div id="first_temperature_fake_potential_graph" style="width:100%;height:400px;clear:both;"></div>
+<p>You can feel free to slide around the fuel flow rate slider to play with this. When the graph is flat, that temperature is stable. (Remember: temperature is on the x-axis.)</p>
+<p>Well. This is <em>terrible</em>. There aren't any stable points!
 </article>
