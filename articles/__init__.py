@@ -6,7 +6,7 @@ to the `bloop` object. It's a blueprint which describes how to route requests fo
 `render_article`; Go team!"""
 
 import os
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, send_from_directory, abort
 
 folder = "articles"
 article_base_template = os.path.join(folder, "article.template.html")
@@ -78,17 +78,22 @@ def supplementary(article_name, file_path):
 	necessary to make a blueprint for it. Then, it's necessary to include the blueprint in this file. Oh well.
 	"""
 	# Put the article name into the standard form, and concatenate them together.
-	article_name = page_name.replace("-", "_").lower()
+	article_name = article_name.replace("-", "_").lower()
 	
 	# You could make a strong argument that this is unnecessary, and we could just shove in a static file handler.
 	# But I like this solution more. It better separates out the supplementary content from the article itself.
 	# Things that don't fit into this framework might not belong as articles, anyway!
-	path = os.path.join(article_name, file_path)
-	print("trying to render supplementary stuff at /{an}/{p}/".format(article_name, file_path))
+
+	# Important! This didn't work right for a long time until I finally made it join `folder` to the beginning.
+	# Without that, it tries to load the file relative to wherever the server's running - which is /not/ the
+	# right thing. The server's running somewhere, but this needs to be in the articles folder, yadda yadda, 
+	# you can figure it out.
+	path = os.path.join(folder, article_name, file_path)
 	# If the path exists and is a file, then we should send it.
 	if os.path.isfile(path):
 		directory, file_name = os.path.split(path)
-		abort(420)
+		print("sending %(fn)s from directory %(d)s" % {"fn": file_name, "d": directory})
+		
 		return send_from_directory(directory, file_name)
 
 	# If that file wasn't found, then, well, whoops.
