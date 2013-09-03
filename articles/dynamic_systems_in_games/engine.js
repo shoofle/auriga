@@ -8,11 +8,11 @@ function engine(element, reaction_rate_function) {
 			if (this.value < 0) { this.value = 0; }
 		},
 		"out": function () {
-			container.find('#temp-out').html(this.value.toFixed(2));
-			if (this.value > damage_threshhold) { container.find('#damage').show();} 
-			else { container.find('#damage').hide(); }
-			if (this.value < q.ignition_threshhold.value) { container.find('#noignition').show(); } 
-			else { container.find('#noignition').hide(); }
+			container.find('.temp-out').html(this.value.toFixed(2));
+			if (this.value > damage_threshhold) { container.find('.damage').show();} 
+			else { container.find('.damage').hide(); }
+			if (this.value < q.ignition_threshhold.value) { container.find('.noignition').show(); } 
+			else { container.find('.noignition').hide(); }
 		},
 		"value": 0,
 	};
@@ -55,7 +55,7 @@ function engine(element, reaction_rate_function) {
 		container.find('[name=ignition]').on('click', function() { q.temperature.value += ignition_boost; });
 		a = setInterval(jQuery.each, timestep, q, function(name, x) { x.update(); });
 		b = setInterval(jQuery.each, timestep, q, function(name, x) { x.out(); });
-		graph = container.find('#potential_plot');
+		graph = container.find('.potential_plot');
 		graph_plot = $.plot(graph, [[]], graph_config);
 	});
 	return {

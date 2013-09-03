@@ -16,21 +16,43 @@
 			}
 			engine($('#fuel-management-1'), heyo);
 		</script>
-		<div id="flow_rate">
+		<div class="flow_rate">
 			<label for="fuel">Fuel Flow Rate</label>
 			<input type="range" name="fuel" min=0 max=2 step=0.01 value=.8>
 		</div>
 		<input type="button" name="ignition" value="Ignite!">
-		<span><span id="temp-out">0</span> degrees</span>
-		<span id="noignition" class="label label-info">No ignition</span>
-		<span id="damage" class="label label-warning">DAMAGE!</span>
-		<div id="potential_plot" style="width:100%;height:400px"></div>
+		<span><span class="temp-out">0</span> degrees</span>
+		<span class="noignition label label-info">No ignition</span>
+		<span class="damage label label-warning">DAMAGE!</span>
+		<div class="potential_plot" style="width:100%;height:400px"></div>
 	</div>
 </div>
 <p>It's interesting! Or maybe it's not. I threw this together trying to think of what an interesting way for an engine to work might be. The fundamental relationship here is:</p>
 \[\frac{\partial T}{\partial t} = c_F T F - c_T (T - T_0)\]
 <p>That is, at any given moment, the temperature is changing (\(\frac{\partial T}{\partial t}\)) by increasing proportional to the temperature times the fuel flow rate (\(c_F T F\)) and decreasing proportional to the difference between the chamber temperature and the ambient temperature (\(c_T (T - T_0)\)). The deignition isn't described in this formula, but it's pretty simple - the \(c_F T F\) factor becomes zero when the temperature is less than <span data-var="ignition_threshhold">2</span> degrees.</p>
 <p>As it turns out, (surprise of surprises!) that description in a formula is pretty useless for actually understanding how this feels. The key was to look at it as a function of the temperature. See, the player changes \(F\), and I want to get a feel for how the temperature's going to change. So I made a graph with respect to \(T\) where the slope is given by \(\frac{\partial T}{\partial t}\). <span class="sidenote">Note that this is not just going to undo the partial derivative. In this graph, we're integrating against \(T\), not \(t\). Roughly, this graph should be thought of as one where the temperature would slide down hills. Anyway.</span></p>
-	<p>You can feel free to slide around the fuel flow rate slider to play with this. When the graph is flat, that temperature is stable. (Remember: temperature is on the x-axis.)</p>
-	<p>Well. This is <em>terrible</em>. There aren't any stable points!
-	</article>
+<p>You can feel free to slide around the fuel flow rate slider to play with this. When the graph is flat, that temperature is stable. (Remember: temperature is on the x-axis.)</p>
+<p>Well. This is <em>terrible</em>. There aren't any stable points!
+<div class="row-fluid">
+	<div id="fuel-management-2" class="span4 offset4">
+		<script type="text/javascript">
+			function heyo2(q) {
+				if (q.temperature.value < q.ignition_threshhold.value) {
+					return -0.5;
+				}
+				return q.temperature.value*q.fuel_flow_rate.value - 0.5;
+			}
+			engine($('#fuel-management-2'), heyo2);
+		</script>
+		<div class="flow_rate">
+			<label for="fuel">Fuel Flow Rate</label>
+			<input type="range" name="fuel" min=0 max=0.5 step=0.01 value=.8>
+		</div>
+		<input type="button" name="ignition" value="Ignite!">
+		<span><span class="temp-out">0</span> degrees</span>
+		<span class="noignition label label-info">No ignition</span>
+		<span class="damage label label-warning">DAMAGE!</span>
+		<div class="potential_plot" style="width:100%;height:400px"></div>
+	</div>
+</div>
+</article>
