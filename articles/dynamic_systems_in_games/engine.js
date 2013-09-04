@@ -1,3 +1,4 @@
+var a=true;
 function engine(element, reaction_rate_function) {
 	var container = $(element);
 	var graph, graph_plot;
@@ -18,7 +19,7 @@ function engine(element, reaction_rate_function) {
 	};
 
 	q.fuel_flow_rate = {
-		"update": function () { this.value = container.find('[name=fuel]').val(); },
+		"update": function () { this.value = parseFloat(container.find('[name=fuel]').val()); },
 		"out": function () { update_graph(); },
 		"value": 0,
 	};
@@ -28,31 +29,59 @@ function engine(element, reaction_rate_function) {
 		"out": function() {},
 		"value": 2,
 	};
-	var ignition_boost = 5;
+	q.ignition_boost = {
+		"update": function () {},
+		"out": function() {},
+		"value": 5,
+	}
 	var damage_threshhold = 10;
 	var temperature_decay = 0.5;
 	var timestep=10;
 
-	var graph_config = { xaxis: { min:0, max:15 }, yaxis: { min:-4, max:4 } };
+	var graph_config = { 
+		xaxis: { min:0, max:15, tickSize: 3 }, 
+		yaxis: { min:-4, max:4, show: false },
+		series: {
+			lines: {
+				lineWidth: 4,
+			},
+			points: {
+				show: true,
+				radius: 0.1,
+			}
+		},
+		colors: ['red'],
+	};
 	function update_graph() {
-		var step_size = 0.2;
+		var step_size = 0.3;
 
-		var data = [], area=0;
-		for (var i=0; i<15; i+=step_size) {
-			area -= step_size * reaction_rate_function({
-				"fuel_flow_rate": q.fuel_flow_rate, 
-				"temperature": { "value":i },
-				"ignition_threshhold": q.ignition_threshhold,
-			});
-			data.push([i, area]);
+		var data = [
+		{data: [], lines: {show: false}, points: {show: true}},
+		{data: [], lines: {show: true}, points: {show: false}},
+		{data: [], lines: {show: false}, points: {show: true}},
+		];
+		var points = [$.extend({}, q), jQuery.extend({}, q), jQuery.extend({}, q)];
+		var flow_value = q.fuel_flow_rate.value;
+		for (var series=0; series<3; series++) {
+			points[series].fuel_flow_rate = {"value": flow_value + 0.01*(series-1)};
+			points[series].temperature = {"value": 0};
+
+			var prev=0;
+			for (var i=0; i<15; i+=step_size) {
+				points[series].temperature.value = i;
+				prev = prev - step_size * reaction_rate_function(points[series]);
+				data[series].data.push([i, prev]);
+			}
 		}
-		graph_plot.setData([data]);
+					if (a) { console.log(points); a=false; }
+
+		graph_plot.setData(data);
 		graph_plot.draw();
 	}
 
 	var a, b;
 	container.ready(function () {
-		container.find('[name=ignition]').on('click', function() { q.temperature.value += ignition_boost; });
+		container.find('[name=ignition]').on('click', function() { q.temperature.value += q.ignition_boost.value; });
 		a = setInterval(jQuery.each, timestep, q, function(name, x) { x.update(); });
 		b = setInterval(jQuery.each, timestep, q, function(name, x) { x.out(); });
 		graph = container.find('.potential_plot');
