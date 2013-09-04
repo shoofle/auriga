@@ -1,7 +1,6 @@
 var a=true;
 function engine(element, reaction_rate_function) {
 	var container = $(element);
-	var graph, graph_plot;
 	var q = {};
 	q.temperature = {
 		"update": function () {
@@ -38,7 +37,7 @@ function engine(element, reaction_rate_function) {
 	var temperature_decay = 0.5;
 	var timestep=10;
 
-	var graph_config = { 
+	var graph, graph_plot, graph_config = { 
 		xaxis: { min:0, max:15, tickSize: 3 }, 
 		yaxis: { min:-4, max:4, show: false },
 		series: {
@@ -46,36 +45,54 @@ function engine(element, reaction_rate_function) {
 				lineWidth: 4,
 			},
 			points: {
-				show: true,
 				radius: 0.1,
 			}
 		},
 		colors: ['red'],
 	};
 	function update_graph() {
-		var step_size = 0.3;
+		var step_size = 0.5;
+		var ghost_count = 1, ghost_separation = 0.03;
 
-		var data = [
-		{data: [], lines: {show: false}, points: {show: true}},
-		{data: [], lines: {show: true}, points: {show: false}},
-		{data: [], lines: {show: false}, points: {show: true}},
-		];
-		var points = [$.extend({}, q), jQuery.extend({}, q), jQuery.extend({}, q)];
 		var flow_value = q.fuel_flow_rate.value;
-		for (var series=0; series<3; series++) {
-			points[series].fuel_flow_rate = {"value": flow_value + 0.01*(series-1)};
-			points[series].temperature = {"value": 0};
+		var the_current_potential=0, delta;
 
-			var prev=0;
-			for (var i=0; i<15; i+=step_size) {
-				points[series].temperature.value = i;
-				prev = prev - step_size * reaction_rate_function(points[series]);
-				data[series].data.push([i, prev]);
+		var d = [{"data": [], lines: {show: true}, points: {show: false}}];
+		var points = [$.extend({}, q, {"fuel_flow_rate": {"value": flow_value}, "temperature": {"value": 0}})];
+		var potentials = [0];
+		
+		for (var s=1; s <= ghost_count; s++) {
+			d.push(	{"data": [], lines: {show: false}, points: {show: true}});
+			var p1 = $.extend({}, q);
+			$.extend(p1, {"fuel_flow_rate": {"value": flow_value + ghost_separation * s}, "temperature": {"value": 0}});
+			points.push(p1);
+			potentials.push(0)
+			d.push(	{"data": [], lines: {show: false}, points: {show: true}});
+			var p2 = $.extend({}, q);
+			$.extend(p2, {"fuel_flow_rate": {"value": flow_value - ghost_separation * s}, "temperature": {"value": 0}});
+			points.push(p2);
+			potentials.push(0)
+		}
+		for (var i=0; i<15; i+=step_size) {
+			for (var s=0; s<potentials.length; s++) {
+				d[s].data.push([i, potentials[s]]);
+				points[s].temperature.value = i;
+				delta = -1 * reaction_rate_function(points[s]);
+				if (s == 0 && (i <= q.temperature.value) && (q.temperature.value < i+step_size)) {
+					the_current_potential = potentials[0] + delta * (q.temperature.value - i);
+				}
+				potentials[s] += delta * step_size;
 			}
 		}
-					if (a) { console.log(points); a=false; }
+		d.push({
+			data: [[q.temperature.value, -10], [q.temperature.value, the_current_potential], [q.temperature.value, 10]], 
+			lines: {show: true, lineWidth: 1}, 
+			points: {show: true, radius: 3}, 
+			color: 'blue',
+		});
+		if (a) { console.log(points); a=false; }
 
-		graph_plot.setData(data);
+		graph_plot.setData(d);
 		graph_plot.draw();
 	}
 
@@ -92,5 +109,6 @@ function engine(element, reaction_rate_function) {
 		'quantities': q,
 		'graph_container': graph,
 		'graph_plot': graph_plot,
+		'poke': function () { this.graph_container = graph; this.graph_plot = graph_plot; },
 	};
 }
