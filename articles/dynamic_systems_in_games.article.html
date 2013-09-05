@@ -10,9 +10,9 @@
 		<script type="text/javascript">
 			function heyo(sq) {
 				if (sq.temperature.value < sq.ignition_threshhold.value) {
-					return -0.5*sq.temperature.value;
+					return -sq.temperature_decay.value*sq.temperature.value;
 				}
-				return sq.temperature.value*sq.fuel_flow_rate.value - 0.5*sq.temperature.value;
+				return sq.temperature.value*sq.fuel_flow_rate.value - sq.temperature_decay.value*sq.temperature.value;
 			}
 			var e1=engine($('#fuel-management-1'), heyo);
 		</script>
@@ -39,9 +39,9 @@
 		<script type="text/javascript">
 			function heyo2(sq) {
 				if (sq.temperature.value < sq.ignition_threshhold.value) {
-					return -0.5;
+					return -sq.temperature_decay.value;
 				}
-				return sq.temperature.value*sq.fuel_flow_rate.value - 0.5;
+				return sq.temperature.value*sq.fuel_flow_rate.value - sq.temperature_decay.value;
 			}
 			var e2=engine($('#fuel-management-2'), heyo2);
 		</script>
