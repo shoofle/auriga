@@ -1,4 +1,3 @@
-var a=true;
 function engine(element, reaction_rate_function) {
 	var e = {}; // the engine object!
 	e.container = $(element);
@@ -9,6 +8,7 @@ function engine(element, reaction_rate_function) {
 			var old_value = this.value;
 			this.value += reaction_rate_function(q)*timestep/1000
 			if (this.value < 0) { this.value = 0; }
+			
 			if (old_value != this.value) { return true; }
 		},
 		"out": function () {
@@ -46,6 +46,7 @@ function engine(element, reaction_rate_function) {
 		"update": function () { 
 			var old_value = this.value;
 			this.value = parseFloat(e.container.find('[name=fuel]').val());
+			
 			if (old_value != this.value) {
 				return true;
 			}
@@ -90,7 +91,7 @@ function engine(element, reaction_rate_function) {
 		"value": 0.5,
 	};
 
-	var ghost_count = 2, ghost_separation = 0.05;
+	var ghost_count = 1, ghost_separation = 0.05;
 	var ghost_data_points = Array(1 + ghost_count*2);
 	
 	var all_graph_data = [{"data": [], lines: {show: true}, points: {show: false}}];
@@ -109,7 +110,7 @@ function engine(element, reaction_rate_function) {
 		colors: ['gray'],
 	};
 	function generate_graph_points() {
-		var step_size = 0.4;
+		var step_size = 0.3;
 
 		var flow_value = q.fuel_flow_rate.value;
 
@@ -137,23 +138,19 @@ function engine(element, reaction_rate_function) {
 				potentials[s] += -1 * step_size * reaction_rate_function(ghost_data_points[s]);
 			}
 		}
-		//console.log("regenerated graph");
+		//console.log("regenerated graph points");
 	}
 	function update_graph() {
 		e.graph_plot.setData(all_graph_data);
 		e.graph_plot.draw();
-		if (a) { console.log(all_graph_data); a=false; }
 	}
 
 	var a, b;
-	var timestep=10;
+	var timestep = 30;
 	e.container.ready(function () {
 		e.graph = e.container.find('.potential_plot');
 		e.graph_plot = $.plot(e.graph, [[]], e.graph_config);
 
-		jQuery.each(q, function(name, x) { x.update(); });
-		jQuery.each(q, function(name, x) { x.out(); });
-		jQuery.each(q, function(name, x) { x.update(); });
 		jQuery.each(q, function(name, x) { x.out(); });
 		e.container.find('[name=ignition]').on('click', function() { q.temperature.value += q.ignition_boost.value; });
 		a = setInterval(jQuery.each, timestep, q, function(name, x) { if (x.update()) { x.out(); } });

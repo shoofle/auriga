@@ -29,11 +29,12 @@
 	<span class="sidenote span4">The dotted lines indicate what the curve will look like if you adjust the fuel flow rate up or down a little bit.</span>
 </div>
 <p>It's interesting! Or maybe it's not. I threw this together trying to think of what an interesting way for an engine to work might be. The fundamental relationship here is:</p>
-\[\frac{\partial T}{\partial t} = c_F T F - c_T (T - T_0)\]
-<p>That is, at any given moment, the temperature is changing (\(\frac{\partial T}{\partial t}\)) by increasing proportional to the temperature times the fuel flow rate (\(c_F T F\)) and decreasing proportional to the difference between the chamber temperature and the ambient temperature (\(c_T (T - T_0)\)). The deignition isn't described in this formula, but it's pretty simple - the \(c_F T F\) factor becomes zero when the temperature is less than <span data-var="ignition_threshhold">2</span> degrees.</p>
-<p>As it turns out, (surprise of surprises!) that description in a formula is pretty useless for actually understanding how this feels. The key was to look at it as a function of the temperature. See, the player changes \(F\), and I want to get a feel for how the temperature's going to change. So I made a graph with respect to \(T\) where the slope is given by \(\frac{\partial T}{\partial t}\). <span class="sidenote span4">Note that this is not just going to undo the partial derivative. In this graph, we're integrating against \(T\), not \(t\). Roughly, this graph should be thought of as one where the temperature would slide down hills. Anyway.</span></p>
-<p>You can feel free to slide around the fuel flow rate slider to play with this. When the graph is flat, that temperature is stable. (Remember: temperature is on the x-axis.)</p>
-<p>Well. This is <em>terrible</em>. There aren't any stable points!
+\[\frac{\partial T}{\partial t} = c_R T F - c_T (T - T_0)\]
+<p>That is, at any given moment, the temperature is changing (\(\frac{\partial T}{\partial t}\)) by increasing proportional to the temperature times the fuel flow rate (\(c_R T F\)) and decreasing proportional to the difference between the chamber temperature and the ambient temperature (\(c_T (T - T_0)\)). The deignition isn't described in this formula, but it's pretty simple - the \(c_R T F\) factor becomes zero when the temperature is less than <span data-var="ignition_threshhold">2</span> degrees.</p>
+<p>As it turns out, (surprise of surprises!) that differential equation description is pretty useless for actually understanding how this feels. The key was to look at the rate of heating/cooling (\(\frac{\partial T}{\partial t}\)) as a function of the temperature. See, the player changes \(F\), and I want to understand how the temperature's going to change. So I made graphs. On the x-axis is temperature. The slope of the graph, at any point, is given by \(\frac{\partial T}{\partial t}\). <span class="sidenote span4">Note that this is not just going to undo the partial derivative. In this graph, we're integrating against \(T\), not \(t\). Roughly, this graph should be thought of as one where the temperature would slide down hills. Anyway.</span> What this means is that, to see how the system will behave, you find the current temperature (on the x-axis, remember), look at the corresponding point on the graph, and simply observe which direction it will fall.</p>
+<p>As a slight digression, this was inspired by the concept of a <a href="http://en.wikipedia.org/wiki/Gravity_well">potential plot</a>, but it's different enough that I don't feel comfortable calling it one. The point is to get a sense for where the temperature is stable and whether it's going to be increasing or decreasing from various points. Since the temperature will always tend to fall down the graph, a stable point is horizontal.</p>
+<p>Well. This is <em>terrible</em>, and describes why this doesn't feel fun. There are no stable points! That's not quite true - there are stable points under one condition: when the fuel flow rate is exactly 0.5. In those circumstances, the temperature always stays constant <em>everywhere</em>. This is no good! This means that all you have to do is raise the flow rate a little, to make the temperature roll out as far as you want it to go, and then drop it to 0.5 and it will stay exactly where you left it. BORING. Let's try some alternatives!</p>
+\[\frac{\partial T}{\partial t} = c_R T F - c_T\]
 <div class="row-fluid">
 	<div id="fuel-management-2" class="span4 offset4">
 		<script type="text/javascript">
@@ -47,7 +48,56 @@
 		</script>
 		<div class="flow_rate">
 			<label for="fuel">Fuel Flow Rate</label>
-			<input type="range" name="fuel" min=0 max=0.5 step=0.01 value=.8>
+			<input type="range" name="fuel" min=0 max=0.25 step=0.001 value=0.1>
+		</div>
+		<input type="button" name="ignition" value="Ignite!">
+		<span><span class="temp-out">0</span> degrees</span>
+		<span class="noignition label label-info">No ignition</span>
+		<span class="damage label label-warning">DAMAGE!</span>
+		<div class="potential_plot" style="width:100%;height:300px"></div>
+	</div>
+</div>
+<p>This was actually the first formula I tried. Temperature always decreases by a constant rate, counterbalanced by the reaction rate (\(c_R T F\)) which is defined as before. It's got slightly better behavior - specifically, there is a stable point (the graph peaks somewhere for most flow rates), which moves around when you change the fuel flow rate.</p>
+<p>On the other hand, it still has a lot of problems. </p>
+<ul>
+	<li>For one thing, the stable point is extremely wide and flat - this means that you only have to get it roughly in the right position, and it'll generally stay happy by itself. This is supposed to be hard, dammit!</li>
+	<li>It drops very, very slowly. This is mostly just a matter of tweaking the constants, but it's just not very responsive. This was an advantage of the first model - where the temperature will fall exponentially in the absence of reactions. Unfortunately, the exponential behavior brought with it the cancellation of peaks. More on this later.</li>
+	<li>It just doesn't make sense! When you want to get it burning stably at a higher temperature, you... decrease the fuel flow? That don't make sense! I'm beginning to think that this is a fundamental problem of having the runaway reaction behavior - where over a certain stable temperature, it will just get hotter and hotter. That doesn't even make sense in the first place - why would it burn more and more with the same amount of fuel? This deserves more thought.</li>
+</ul>
+<p>Time for another try. There are two directions we can go here - try to describe entirely new behaviors from the ground up, or try to modify the existing system. I'll give both a try, once I have spare time!</p>
+<div class="row-fluid">
+	<div id="fuel-management-3" class="span4 offset4">
+		<script type="text/javascript">
+			var f, t;
+			var e3=engine($('#fuel-management-3'), function (sq) {
+				if (sq.temperature.value < sq.ignition_threshhold.value) {
+					return 0;
+				}
+				f = 10*sq.fuel_flow_rate.value;
+				t = sq.temperature.value - f - sq.ignition_threshhold.value;
+				return 5 * (t/Math.sqrt(f)) * Math.exp(-t*t/(f));
+			});
+		</script>
+		<div class="flow_rate">
+			<label for="fuel">Fuel Flow Rate</label>
+			<input type="range" name="fuel" min=0 max=1 step=0.01 value=0.1>
+		</div>
+		<input type="button" name="ignition" value="Ignite!">
+		<span><span class="temp-out">0</span> degrees</span>
+		<span class="noignition label label-info">No ignition</span>
+		<span class="damage label label-warning">DAMAGE!</span>
+		<div class="potential_plot" style="width:100%;height:300px"></div>
+	</div>
+</div>
+<div class="row-fluid">
+	<div id="fuel-management-3" class="span4 offset4">
+		<script type="text/javascript">
+			// describe a better potential graph
+			// var e3=engine($('#fuel-management-3'), heyo2);
+		</script>
+		<div class="flow_rate">
+			<label for="fuel">Fuel Flow Rate</label>
+			<input type="range" name="fuel" min=0 max=0.25 step=0.001 value=0.1>
 		</div>
 		<input type="button" name="ignition" value="Ignite!">
 		<span><span class="temp-out">0</span> degrees</span>
