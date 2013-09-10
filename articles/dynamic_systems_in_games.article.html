@@ -68,14 +68,17 @@
 <div class="row-fluid">
 	<div id="fuel-management-3" class="span4 offset4">
 		<script type="text/javascript">
-			var f, t;
+			var gaussian = function (x) { return Math.exp(-x*x); };
+			var dgauss = function (x) { return x * gaussian(x); };
+			var recenter = function (fn, center, scale) { return function (x) { return fn( (x-center)/scale ); }; };
+
 			var e3=engine($('#fuel-management-3'), function (sq) {
 				if (sq.temperature.value < sq.ignition_threshhold.value) {
 					return 0;
 				}
-				f = 10*sq.fuel_flow_rate.value;
-				t = sq.temperature.value - f - sq.ignition_threshhold.value;
-				return 5 * (t/Math.sqrt(f)) * Math.exp(-t*t/(f));
+				return 5*recenter(dgauss, 
+					10*sq.fuel_flow_rate.value + sq.ignition_threshhold.value, 
+					Math.sqrt(10*sq.fuel_flow_rate.value)) (sq.temperature.value);
 			});
 		</script>
 		<div class="flow_rate">
@@ -89,15 +92,28 @@
 		<div class="potential_plot" style="width:100%;height:300px"></div>
 	</div>
 </div>
+<p>Sweet! That's very much what I'm going for, at least in the peak. For the time being, I'm not worrying about what it's like far outside what we want to be the stable point. Now, though, it takes <em>too much</em> work to keep it stable.</p>
 <div class="row-fluid">
-	<div id="fuel-management-3" class="span4 offset4">
+	<div id="fuel-management-4" class="span4 offset4">
 		<script type="text/javascript">
 			// describe a better potential graph
-			// var e3=engine($('#fuel-management-3'), heyo2);
+			var e4=engine($('#fuel-management-4'), function (sq) {
+				if (sq.temperature.value < sq.ignition_threshhold.value) {
+					return 0;
+				}
+				var y = 0;
+				y += 10*recenter(dgauss, 
+					10*sq.fuel_flow_rate.value + sq.ignition_threshhold.value,
+					Math.sqrt(10*sq.fuel_flow_rate.value)) (sq.temperature.value);
+				y -= 5*recenter(dgauss, 
+					10*sq.fuel_flow_rate.value + sq.ignition_threshhold.value,
+					Math.sqrt(2*sq.fuel_flow_rate.value)) (sq.temperature.value);
+				return y;
+			});
 		</script>
 		<div class="flow_rate">
 			<label for="fuel">Fuel Flow Rate</label>
-			<input type="range" name="fuel" min=0 max=0.25 step=0.001 value=0.1>
+			<input type="range" name="fuel" min=0 max=1 step=0.001 value=0.1>
 		</div>
 		<input type="button" name="ignition" value="Ignite!">
 		<span><span class="temp-out">0</span> degrees</span>
