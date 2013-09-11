@@ -1,0 +1,17 @@
+<article>
+<header>
+<h1>Object-Oriented Programming</h1>
+</header>
+<p>Object-oriented programming means a lot of things to a lot of different people. A lot of people debate or argue about "what object-oriented programming means".</p>
+<p>The way I see it, there are two things that make programming object-oriented.</p>
+<h3>Part The First</h3>
+<p>Suppose I'm writing a system that manages documents. I can access the length of a document by <code>document.length</code>! If I want to capitalize the document, I call <code>document.capitalize()</code>. If I want the title of the document, I simply inspect <code>document.title</code>. This is the essence of object-oriented programming. The alternative to this involves horrible things like manually keeping track of lists of all the attributes of the documents, so you would have <code>titles</code>, <code>body_texts</code>, <code>lengths</code> all as separate arrays, and if you want the title of the first document you ask for <code>titles[0]</code> or something and ANYWAY THE POINT IS: this would be stupid. So that's the essence of objects.<p>
+<p>It's the essence of object-oriented programming! But it's not.</p>
+<h3>Part The Second</h3>
+<p>Because really, what makes object-oriented programming awesome is that an object knows itself. When I call <code>document.capitalize()</code>, then the code that gets executed knows <em>which document to capitalize</em>. That's the important thing!</p>
+<h3>Part The Unrelated</h3>
+<p>I kind of hate C/C++ and their legacy for overburdening OOP with this confusing question. When the above was suggested to me, I kind of had this moment when I asked</p>
+<blockquote>What? Why is that a big deal? Of course <code>document.capitalize()</code> knows which document it's talking about - you're asking for the <code>capitalize</code> function of <em>that specific document</em>. It shouldn't know that other documents exist!</blockquote>
+<p>Asking this question was a sign of how I had learned OOP - because in the Olden Times, you were always confronted with the fact that the function <code>document.capitalize()</code> doesn't belong to the specific <em>instance</em> that you called it on, but rather it belongs to the <em>class</em> called "<code>Document</code>" or whatever. And I think, ultimately, that that's a very confusing way for things to work!</p>
+<p>Fortunately, it seems like most modern languages (I'm looking at you, javascript and python! Save the day!) take reasonably large strides towards hiding the actual owner of any particular method on an object.</p>
+</article>
