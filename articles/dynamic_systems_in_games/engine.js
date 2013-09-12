@@ -1,7 +1,14 @@
+var cfg = {
+	xaxis: { min:0, max:15, tickSize: 3 }, 
+	yaxis: { min:-20, max:20, show: false },
+	series: { lines: { lineWidth: 4, }, points: { radius: 0.1, } },
+	colors: ['gray'],
+};
 function engine(element, reaction_rate_function) {
 	var e = {}; // the engine object!
 	e.container = $(element);
 	var q = {};
+	e.reaction_rate_function = reaction_rate_function;
 	e.quantities = q;
 	q.temperature = {
 		"update": function () {
@@ -25,7 +32,7 @@ function engine(element, reaction_rate_function) {
 		},
 		"value": 0,
 		"graph_data": {
-			data: [[0,10],[0,0],[0,-10]], 
+			data: [[0,cfg.yaxis.max+2],[0,0],[0,cfg.yaxis.min-2]], 
 			lines: {show: true, lineWidth: 1}, 
 			points: {show: true, radius: 3}, 
 			color: 'red',
@@ -57,7 +64,7 @@ function engine(element, reaction_rate_function) {
 	q.ignition_threshhold = {
 		"update": function () {},
 		"out": function() {
-			this.graph_data.data = [[this.value, 10], [this.value, -10], [-this.value, -10], [-this.value, 10], [this.value, 10]];
+			this.graph_data.data = [[this.value, cfg.yaxis.max+2], [this.value, cfg.yaxis.min-2], [-this.value, cfg.yaxis.min-2], [-this.value, cfg.yaxis.max+2], [this.value, cfg.yaxis.max+2]];
 		},
 		"value": 2,
 		"graph_data": {
@@ -70,7 +77,7 @@ function engine(element, reaction_rate_function) {
 	q.damage_threshhold = {
 		"update": function () {},
 		"out": function() {
-			this.graph_data.data = [[this.value, -10], [this.value, 10], [20*this.value, 10], [20*this.value, -10], [this.value, -10]];
+			this.graph_data.data = [[this.value, cfg.yaxis.min-2], [this.value, cfg.yaxis.max+2], [20*this.value, cfg.yaxis.max+2], [20*this.value, cfg.yaxis.min-2], [this.value, cfg.yaxis.min-2]];
 		},
 		"value": 10,
 		"graph_data": {
@@ -105,7 +112,7 @@ function engine(element, reaction_rate_function) {
 	
 	e.graph_config = { 
 		xaxis: { min:0, max:15, tickSize: 3 }, 
-		yaxis: { min:-8, max:8, show: false },
+		yaxis: { min:-20, max:20, show: false },
 		series: { lines: { lineWidth: 4, }, points: { radius: 0.1, } },
 		colors: ['gray'],
 	};
@@ -157,4 +164,16 @@ function engine(element, reaction_rate_function) {
 		b = setInterval(update_graph, timestep);
 	});
 	return e;
+}
+
+function temperature_derivative (fn, step) {
+	return function (quantities) {
+		var next_input = $.extend({}, quantities);
+		next_input.temperature = {"value": quantities.temperature.value + step};
+		return (fn(next_input) - fn(quantities))/step;
+	};
+};
+var step = 0.005;
+function alt_engine(element, reaction_rate_potential_function) {
+	return engine(element, temperature_derivative(reaction_rate_potential_function, step));
 }

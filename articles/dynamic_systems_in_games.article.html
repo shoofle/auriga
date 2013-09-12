@@ -3,6 +3,7 @@
 <script type="text/javascript" src="/static/flot/jquery.flot.js"></script>
 <script type="text/javascript" src="/static/flot/jquery.flot.resize.js"></script>
 <script type="text/javascript" src="engine.js"></script>
+<script type="text/javascript" src="supporting_math.js"></script>
 <h1>Dynamic Systems in Games</h1>
 <p>Here, take a look at this simple game I coded up. Your task is to keep an engine's temperature as high as possible, to maximize power output, without dmaaging the engine. The threshhold for damage is at <span data-var="damage_threshhold">10</span> degrees, and the engine will stop burning and deignite if it goes under <span data-var="ignition_threshhold">2</span> degrees.</p>
 <div class="row-fluid">
@@ -97,18 +98,17 @@
 	<div id="fuel-management-4" class="span4 offset4">
 		<script type="text/javascript">
 			// describe a better potential graph
-			var e4=engine($('#fuel-management-4'), function (sq) {
-				if (sq.temperature.value < sq.ignition_threshhold.value) {
-					return 0;
-				}
-				var y = 0;
-				y += 10*recenter(dgauss, 
-					10*sq.fuel_flow_rate.value + sq.ignition_threshhold.value,
-					Math.sqrt(10*sq.fuel_flow_rate.value)) (sq.temperature.value);
-				y -= 5*recenter(dgauss, 
-					10*sq.fuel_flow_rate.value + sq.ignition_threshhold.value,
-					Math.sqrt(2*sq.fuel_flow_rate.value)) (sq.temperature.value);
-				return y;
+			var f, t, i;
+			var e4=alt_engine($('#fuel-management-4'), function (sq) {
+				f = sq.fuel_flow_rate.value;
+				t = sq.temperature.value;
+				i = sq.ignition_threshhold.value;
+				return -5*(
+					exp_decay(0.5, 0.3) (t) +
+					exp_growth(0.5, 10) (t) +
+					Math.sqrt(1+60*f)*(make_bell(10*f+i, Math.sqrt(10*f+1)) (t)) + 
+					-1*Math.sqrt(1+10*f)*(make_bell(10*f+i, Math.sqrt(f+1)) (t))
+					);
 			});
 		</script>
 		<div class="flow_rate">
