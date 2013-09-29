@@ -4,8 +4,8 @@
 		<title>Shoofle's Test Thing</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		<script type="text/javascript" src="../static/jquery.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="../static/chat.css" />
+		<script type="text/javascript" src="/static/jquery-2.0.3.js"></script>
+		<script type="text/javascript" src="/static/annyang.min.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
 					$('.scanner').addClass('off');
@@ -17,6 +17,13 @@
 					}).on('touchend touchleave', function(evt) {
 						$(evt.target).removeClass('on').addClass('off');
 					});
+					if (annyang) {
+						var commands = {
+							'hey': function() { alert("what of it, punk?"); }
+						};
+						annyang.init(commands);
+						annyang.start();
+					}
 			});
 		</script>
 		<style type="text/css">
