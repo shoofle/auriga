@@ -1,0 +1,393 @@
+<article>
+<style type="text/css">
+	svg .glyph {
+		stroke: #600;
+		fill: none;
+	}
+	svg .vowel {
+		stroke: #044;
+		fill: none;
+	}
+	svg .radical {
+		stroke: #004;
+		fill: none;
+	}
+	svg .enclosure {
+		stroke: #000;
+		fill: none;
+	}
+</style>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="400px" height="400px" preserveAspectRatio="xMidYMax" id="arena" viewBox="-100 -100 200 200">
+<defs>
+<path id="mound" d="M-10,0 H-8 A9,8 0,0,1 8,0 H10" class="glyph"></path>
+<g id="mound2">
+<path d="M-10,0 H-8 A9,8 0 0,1 8,0 H10" class="glyph"></path>
+<path d="M-6,0 A7,6 0,0,1 6,0" class="glyph"></path>
+</g>
+<path id="omega" d="M-10,0 H-4 A7,7 0,1,1 4,0 H10" class="glyph"></path>
+<g id="omega2">
+<path d="M-10,0 H-4 A7,7 0,1,1 4,0 H10" class="glyph"></path>
+<path d="M-1,-1 A4.5,4.5 0,1,1 1,-1" class="glyph"></path>
+</g>
+<path id="angle" d="M-10,0 H-6 L0,-8 L6,0 H10" class="glyph"></path>
+<g id="angle2">
+<path d="M-10,0 H-6 L0,-8 L6,0 H10" class="glyph"></path>
+<path d="M-4,0 L0,-5.3333 L4,0" class="glyph"></path>
+</g>
+<path id="chalice" d="M-10,0 H-6 A15,15 0,0,1 -10,-6 A15,10 0,0,0 10,-6 A15,15 0,0,1 6,0 H10" class="glyph"></path>
+<g id="chalice2">
+<path d="M-10,0 H-6 A15,15 0,0,1 -10,-6 A15,10 0,0,0 10,-6 A15,15 0,0,1 6,0 H10" class="glyph"></path>
+<path d="M-8.5,-3 A 14,9 0,0,0 8.5,-3" class="glyph"></path>
+</g>
+<path id="loop" d="M-10,0 H-8 C6,0 6,-10 0,-10 C-6,-10 -6,0 6,0 H10" class="glyph"></path>
+<g id="loop2">
+<path d="M-10,0 H-8 C6,0 6,-10 0,-10 C-6,-10 -6,0 6,0 H10" class="glyph"></path>
+<circle r="2" cx="0" cy="-6" class="glyph"></circle>
+</g>
+<path id="weird_up" d="M -4,-4 A 4,6 0,0,0 0,-8 A 4,6 0,0,0 4,-4" class="vowel"></path>
+<path id="weird_down" d="M -4,-8 A 4,6 0,0,0 0,-4 A 4,6 0,0,0 4,-8" class="vowel"></path>
+</svg>
+<hr>
+<input type="text" value="shoof~l ihs ~ bihg dohrk" />
+<h3>Available Sounds:</h3>
+<p id="sounds_list"></p>
+<script type="text/javascript">
+	var svg_ns = "http://www.w3.org/2000/svg";
+	var xlink_ns = "http://www.w3.org/1999/xlink";
+	function cos_deg (angle) { return Math.cos(angle * Math.PI / 180); }
+	function sin_deg (angle) { return Math.sin(angle * Math.PI / 180); }
+	function norm (vector) {
+		var norm = Math.sqrt(vector.x*vector.x + vector.y*vector.y);
+		return {x: vector.x / norm, y: vector.y / norm};
+	}
+	function sub (a, b) { return {x: a.x-b.x, y: a.y-b.y}; }
+	function add (a, b) { return {x: a.x+b.x, y: a.y+b.y}; }
+	function mul (a, b) {
+		if ("x" in a) { return {x: a.x*b, y: a.y*b}; }
+		return a*b;
+	}
+
+	// Table is the table of what letters mean what things!
+	// Each entry in the table is a list of columnar cells. 
+	// Each column corresponds to a particular radical configuration.
+	// Each cell is a list of strings which will be recognized in parsing.
+	var table = {};
+	// Main consonants!
+	table["mound"] = [  ["m"],       ["n"], [],     ["ng"]];
+	table["omega"] = [  ["p"],       ["t"], [],     ["k", "c", "q"]];
+	table["angle"] = [  ["f", "ph"], ["s"], ["sh"], []];
+	table["loop"] = [   ["th"],      [],    ["ch"], []];
+	table["chalice"] = [["w"],       ["r"], ["y"],  ["h"]];
+	// Alternate (mostly, voiced) consonants!
+	table["mound2"] = [  [],     [],    [],     []];
+	table["omega2"] = [  ["b"],  ["d"], [],     ["g"]];
+	table["angle2"] = [  ["v"],  ["z"], ["zh"], []];
+	table["loop2"] =  [  ["dh"], [],    ["j"],  []];
+	table["chalice2"] = [[],     ["l"], [],     []];
+	// Vowels in the eat/ate/at and oh/ow/aw tracks!
+	table["above double"] = [["ee"], ["ay"], ["a"]];
+	table["above single"] = [["ih"], ["eh", "e"], ["ah"]];
+	table["below"] = [["oh", "o"], ["ow", "ou"], ["aw"]];
+	// Vowels on the line!	
+	table["on the line double"] = [["uh"], ["oo"]];
+	table["on the line single"] = [["~"], ["u"]];
+	// The weird ones!
+	table["weird up"] = [["i"]];
+	table["weird down"] = [["oy", "oi"]];
+
+	// These lists simply list out which radicals should be shown.
+	// four_rad_options contains the radicals array that should be passed to make glyphs in rows with four columns.
+	// three_rad_options contains the radicals array that will be passed to make glyphs in rows with three columns.
+	// And so on.
+	// These are consumed in make_new_glyph(). 
+	// Basically, each glyph has a number of locations that radicals are placed.
+	// If a shape is in the third column of a four-column row, then we look at four_rad_options, and see that the 
+	// third element is [null, "dot", "dot"]. So that shape will have no radical in the first position, and dots in 
+	// both the second and third positions.
+	var four_rad_options = [];
+	four_rad_options.push(["dot", null, null]);
+	four_rad_options.push(["line", null, null]);
+	four_rad_options.push([null, "dot", "dot"]);
+	four_rad_options.push([null, "line", "line"]);
+	var three_rad_options = [];
+	three_rad_options.push(["line", null]);
+	three_rad_options.push([null, null]);
+	three_rad_options.push([null, "line"]);
+	var two_rad_options = [];
+	two_rad_options.push([null, null]);
+	two_rad_options.push(["line", "line"]);
+	var one_rad_options = [];
+	one_rad_options.push([]);
+	var rad_options = [one_rad_options, two_rad_options, three_rad_options, four_rad_options];
+
+	var lookup = {};
+	$.each(table, function(shape_name, row) {
+		var radical_options = rad_options[row.length - 1];
+		$.each(row, function(radical_index, valid_sequences) {
+			var current_radicals = radical_options[radical_index];
+			$.each(valid_sequences, function(i, phrase) {
+				lookup[phrase] = {name: shape_name, radicals: current_radicals};
+			});
+		});
+	});
+
+	var consonant_shapes = "mound omega angle chalice loop ";
+	consonant_shapes = consonant_shapes + consonant_shapes.replace(/ /gi, "2 ");
+	consonant_shapes = consonant_shapes.split(" ");
+	console.log(consonant_shapes);
+
+	var vowel_shapes = "above double,above single,below,on the line double,on the line single,weird up,weird down".split(",");
+	
+
+	// Defines the positions of the radicals for glyphs. Should perhaps be moved to live in the XML?
+	// Maybe each symbol could be a group, and then have radical shapes identified by their classes,
+	// and then dynamically shown/hidden?
+	var consonant_radical_positions = {
+		"mound":   [{x: 0, y: -8}, {x: -3, y: -7}, {x: 3, y: -7}],
+		"omega":   [{x: 0, y: -16}, {x: -3, y: -15}, {x: 3, y: -15}],
+		"angle":   [{x: 0, y: -12}, {x: -3, y: -10}, {x: 3, y: -10}],
+		"loop":    [{x: 0, y: -14}, {x: -3, y: -14}, {x: 3, y: -14}],
+		"chalice": [{x: 0, y: -7}, {x: -3, y: -7}, {x: 3, y: -7}]
+	};
+	// Ensure that all the doubled glyphs have the same radical positions as their singled counterparts.
+	$.each(consonant_shapes, function(i, name) { 
+		if (name.slice(0, -1) in consonant_radical_positions) {
+			consonant_radical_positions[name] = consonant_radical_positions[name.slice(0, -1)];
+		}
+	});
+	console.log(consonant_radical_positions);
+	var radical_backup = 3.5;
+	var radical_length = 3;
+	var radical_length_vowel = 6;
+	var vowel_radius = 4;
+	var inset = 5;
+	var word_radius = 20;
+	var sentence_radius = 100;
+
+	var the_big_word;
+
+	function new_glyph(symbol_name, radicals) {
+		if ($.inArray(symbol_name, consonant_shapes) != -1) { return new_consonant(symbol_name, radicals); }
+		return new_vowel(symbol_name, radicals);
+	}
+	function new_vowel(symbol_name, radicals) {
+		var s = {handles: {}, vectors: []};
+		s.handles.circle_in = {x: 0, y: 0};
+		s.handles.circle_out = {x: 0, y: 0};
+		s.handles.radicals = [];
+		if (symbol_name == "weird up" || symbol_name == "weird down") {
+			s.e = ns_elem('use', svg_ns, {'xlink:href': '#' + symbol_name.replace(" ", "_")}, xlink_ns);
+			s.handles.center = {x: 0, y: -6};
+		}
+		else {
+			s.e = ns_elem('g', svg_ns);
+
+			if (symbol_name.indexOf("above") != -1) { s.handles.center = {x: 0, y: -8}; }
+			if (symbol_name.indexOf("below") != -1) { s.handles.center = {x: 0, y: 8}; }
+			if (symbol_name.indexOf("on the line") != -1) { s.handles.center = {x: 0, y: 0}; }
+
+			s.handles.radicals.push({x: 0, y: s.handles.center.y - vowel_radius});
+			s.handles.radicals.push({x: 0, y: s.handles.center.y + vowel_radius});
+
+			var vowel_out = $(ns_elem('circle', svg_ns));
+			vowel_out.attr({r: vowel_radius, cx: s.handles.center.x, cy: s.handles.center.y}).attr('class', 'vowel');
+			$(s.e).append(vowel_out);
+			if (symbol_name.indexOf("double") != -1) {
+				var vowel_in = $(ns_elem('circle', svg_ns));
+				vowel_in.attr({r: vowel_radius/3, cx: s.handles.center.x, cy: s.handles.center.y}).attr('class', 'vowel');
+				$(s.e).append(vowel_in);
+			}
+
+			$.each(radicals, function (index, value) {
+				if (value != "line") { return true; }
+				
+				var start = s.handles.radicals[index]; var d = norm(sub(start, s.handles.center));
+				var end = { x: start.x + d.x * radical_length_vowel, y: start.y + d.y * radical_length_vowel};
+
+				var line = ns_elem('path', svg_ns);
+				$(line).attr('d', 'M ' + start.x + ', ' + start.y + ' L ' + end.x + ', ' + end.y);
+				$(line).attr('class', 'radical')
+				$(s.e).append(line);
+			});
+		}
+
+		$.each(s.handles, function(index, value) { if (index != "radicals") { s.vectors.push(value); } });
+		
+		$.each(s.handles.radicals, function(index, value) { s.vectors.push(value); });
+
+		return s;
+	}
+	function new_consonant(symbol_name, radicals) {
+		var s = {e: ns_elem('g', svg_ns), handles: {}, vectors: []};
+
+		s.handles.center = {x: 0, y: 0};
+		s.handles.circle_in = {x: -10, y: 0};
+		s.handles.circle_out = {x: 10, y: 0};
+		s.handles.radicals = {};
+
+		$.extend(true, s.handles.radicals, consonant_radical_positions[symbol_name]);
+
+		$(s.e).append(ns_elem('use', svg_ns, {'xlink:href': '#' + symbol_name}, xlink_ns));
+
+		$.each(radicals, function(index, value) {
+			var radical_position = s.handles.radicals[index];
+			if (value == "dot") {
+				var circle = $(ns_elem('circle', svg_ns));
+				circle.attr({r: 1, cx: radical_position.x, cy: radical_position.y});
+				circle.attr('class', 'radical');
+				$(s.e).append(circle); 
+			}
+			if (value == "line") {
+				var d = norm(sub(radical_position, s.handles.center));
+				var start = sub(radical_position, mul(d, radical_backup));
+				var end = add(radical_position, mul(d, radical_length));	
+				
+				var line = $(ns_elem('path', svg_ns));
+				line.attr('d', 'M' + start.x + ',' + start.y + ' L' + end.x + ',' + end.y);
+				line.attr('class', 'radical');
+				$(s.e).append(line);
+			}
+		});
+
+		$.each(s.handles, function(index, value) { if (index != "radicals") { s.vectors.push(value); } });
+		$.each(s.handles.radicals, function(i, vector) { s.vectors.push(vector); });
+		
+		return s;
+	}
+	function transform_for_circle(radius, angle, glyph) {
+		var group = ns_elem('g', svg_ns);
+		$(group).attr('transform', 'rotate(' + (-1*angle) + ') translate(0 ' + radius + ')');
+		$(group).append(glyph.e);
+
+		$.each(glyph.vectors, function (name, value) {
+			// Translate the vector.
+			var translated = {};
+			translated.x = value.x;
+			translated.y = value.y + radius;
+
+			// Rotate the vector.
+			var rotated = {};
+			rotated.x = translated.x * cos_deg(-angle) - translated.y * sin_deg(-angle);
+			rotated.y = translated.x * sin_deg(-angle) + translated.y * cos_deg(-angle); 
+
+			// Change the vector in-place.
+			value.x = rotated.x;
+			value.y = rotated.y;
+		});
+
+		return {e: group, children: [glyph], handles: glyph.handles, vectors: glyph.vectors};
+	}
+	function enclose(radius, list_of_glyphs) {
+		var length = list_of_glyphs.length;
+		angle_step = 360 / length;
+
+		var enclosure = {e: ns_elem('g', svg_ns), children: [], handles: {}, vectors: [] };
+		
+		$.each(list_of_glyphs, function (index, glyph) {
+			var the_glyph = transform_for_circle(radius, angle_step*index, glyph);
+			
+			enclosure.children.push(the_glyph);
+			$(enclosure.e).append(the_glyph.e);
+			$.each(the_glyph.vectors, function (i, vector) { enclosure.vectors.push(vector); });
+		});
+
+		$.each(enclosure.children, function (index) {
+			var current = enclosure.children[index];
+			var next = enclosure.children[(index+1) % length];
+
+			var npd = "M " + current.handles.circle_out.x + " " + current.handles.circle_out.y;
+			var arc = "A" + radius + "," + radius + " 0,0,0 ";
+			if (length != 1) {
+				npd = npd + arc + next.handles.circle_in.x + "," + next.handles.circle_in.y + " ";
+			}
+			else {
+				npd = npd + arc + next.handles.circle_in.x + "," + (next.handles.circle_in.y - radius - radius) + " ";
+				npd = npd + arc + next.handles.circle_in.x + "," + next.handles.circle_in.y + " ";
+			}	
+
+			var arc = $(ns_elem('path', svg_ns)).attr('d', npd).attr('class', 'enclosure');
+			$(enclosure.e).append(arc);
+		});
+		
+		$(enclosure.e).attr('transform', 'translate(0 ' + (-radius - inset) + ')');
+		$.each(enclosure.vectors, function (i, vector) {
+			vector.y = vector.y - radius - inset;
+		});
+
+		enclosure.handles.circle_in = {x: 0, y: 0};
+		enclosure.handles.circle_out = {x: 0, y: 0};
+
+		enclosure.vectors.push(enclosure.handles.circle_in);
+		enclosure.vectors.push(enclosure.handles.circle_out);
+
+		return enclosure;
+	}
+	function letters_from_string(str) {
+		str = str.toLowerCase();
+		str = str.replace(/x/g, "ks");
+		str = str.replace(/qu/g, "kw");
+		str = str.replace(/q/g, "k");
+		
+		var tokens = [];
+		while (str.length != 0) {
+			var results = consume_token(str);
+			str = results.str;
+			if (results.success) {
+				tokens.push(results.token);
+			}
+		}
+		return tokens;
+	}
+	function consume_token(str) {
+		if (str[0] == " ") {
+			return consume_token(str.slice(1));
+		}
+		var out = {success: false};
+		var the_tip = str.slice(0,2);
+		if (the_tip in lookup) {
+			out.success = true;
+			out.str = str.slice(2);
+			out.token = lookup[the_tip];
+			console.log(out);
+			console.log(the_tip, out.token);
+		}
+		else if (the_tip[0] in lookup) {
+			out.success = true;
+			out.str = str.slice(1);
+			out.token = lookup[the_tip[0]];
+		}
+		return out;
+	}
+	
+	function interpret_input(str) {
+		var words = [];
+		$.each(str.split(" "), function (i, word) {
+			var tk = letters_from_string(word);
+			var glyphs = [];
+			$.each(tk, function (i, letter_glyph) {
+				glyphs.push(new_glyph(letter_glyph.name, letter_glyph.radicals));
+			});
+			words.push(enclose(word_radius, glyphs));
+		});
+		var out = enclose(sentence_radius, words);
+		out = transform_for_circle(sentence_radius+inset, 0, out);
+		return out;
+	}
+	$(document).ready(function () {
+		function change_word(str) {
+			if (the_big_word && the_big_word.e) { $(the_big_word.e).remove(); }
+			the_big_word = interpret_input(str);
+			$('svg').append(the_big_word.e);
+		}
+		change_word($('input').val());
+		$('input').change(function() { change_word($(this).val()); });
+		$('input').keyup(function() { change_word($(this).val()); });
+		$('svg').append(the_big_word.e);
+
+		$('#sounds_list').text(Object.keys(lookup).join(", "));
+	});
+</script>
+<script type="text/javascript">
+ function ns_elem () { if (typeof arguments[0] === "undefined") { console.log('There was an error in the element assist function. Called with no valid tag name!');} var elem; if (typeof arguments[1] === "string") { elem = document.createElementNS(arguments[1], arguments[0]); for (var i=2; i<arguments.length; i+=2) { if (typeof arguments[i+1] === "undefined") { for (var key in arguments[i]) { elem.setAttribute(key, arguments[i][key]); } break; } else { for (var key in arguments[i]) { elem.setAttributeNS(arguments[i+1], key, arguments[i][key]); } } } } else { elem = document.createElement(arguments[0]); for (var i=1; i<arguments.length; i+=2) { if (typeof arguments[i+1] === "undefined") { for (var key in arguments[i]) { elem.setAttribute(key, arguments[i][key]); } break; } else { for (var key in arguments[i]) { elem.setAttributeNS(arguments[i+1], key, arguments[i][key]); } } } } return elem;}
+</script>
+</article>
