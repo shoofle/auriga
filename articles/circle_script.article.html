@@ -114,6 +114,8 @@
 	one_rad_options.push([]);
 	var rad_options = [one_rad_options, two_rad_options, three_rad_options, four_rad_options];
 
+	// Invert the table of shapes, and the lists of radical options, into a lookup table.
+	// The keys are phrases recognized as coding a sound, and the values are objects describing the appearance of the glyph that should result.
 	var lookup = {};
 	$.each(table, function(shape_name, row) {
 		var radical_options = rad_options[row.length - 1];
@@ -131,7 +133,6 @@
 	console.log(consonant_shapes);
 
 	var vowel_shapes = "above double,above single,below,on the line double,on the line single,weird up,weird down".split(",");
-	
 
 	// Defines the positions of the radicals for glyphs. Should perhaps be moved to live in the XML?
 	// Maybe each symbol could be a group, and then have radical shapes identified by their classes,
@@ -149,20 +150,27 @@
 			consonant_radical_positions[name] = consonant_radical_positions[name.slice(0, -1)];
 		}
 	});
-	console.log(consonant_radical_positions);
 	var radical_backup = 3.5;
 	var radical_length = 3;
 	var radical_length_vowel = 6;
 	var vowel_radius = 4;
-	var inset = 15;
-	var word_radius = 20;
-	var sentence_radius = 100;
+	var inset = 5;
+	var word_radius = [14, 14, 14, 16, 20, 24, 28, 32];
+	var sentence_radius = 80;
 
 	var the_big_word;
 
 	function new_glyph(symbol_name, radicals) {
-		if ($.inArray(symbol_name, consonant_shapes) != -1) { return new_consonant(symbol_name, radicals); }
-		return new_vowel(symbol_name, radicals);
+		var glyph;
+		if ($.inArray(symbol_name, consonant_shapes) != -1) { 
+			glyph = new_consonant(symbol_name, radicals); 
+		}
+		if ($.inArray(symbol_name, vowel_shapes) != -1) { 
+			glyph = new_vowel(symbol_name, radicals); 
+		}
+		glyph.name = symbol_name;
+		glyph.radicals = radicals;
+		return glyph;
 	}
 	function new_vowel(symbol_name, radicals) {
 		var s = {handles: {}, vectors: []};
@@ -269,7 +277,8 @@
 			value.y = rotated.y;
 		});
 
-		return {e: group, children: [glyph], handles: glyph.handles, vectors: glyph.vectors};
+		glyph.e = group;
+		return glyph;
 	}
 	function enclose(radius, list_of_glyphs) {
 		var length = list_of_glyphs.length;
@@ -295,7 +304,7 @@
 				npd = npd + arc + next.handles.circle_in.x + "," + next.handles.circle_in.y + " ";
 			}
 			else {
-				npd = npd + arc + next.handles.circle_in.x + "," + (next.handles.circle_in.y - radius - radius) + " ";
+				npd = npd + arc + "0," + (next.handles.circle_in.y - radius - radius) + " ";
 				npd = npd + arc + next.handles.circle_in.x + "," + next.handles.circle_in.y + " ";
 			}	
 
@@ -361,7 +370,11 @@
 			$.each(tk, function (i, letter_glyph) {
 				glyphs.push(new_glyph(letter_glyph.name, letter_glyph.radicals));
 			});
-			words.push(enclose(word_radius, glyphs));
+			var r = word_radius[word_radius.length-1];
+			if (glyphs.length < word_radius.length) {
+				r = word_radius[glyphs.length];
+			}
+			words.push(enclose(r, glyphs));
 		});
 		var out = enclose(sentence_radius, words);
 		out = transform_for_circle(sentence_radius+inset, 0, out);
