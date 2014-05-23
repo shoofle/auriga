@@ -1,23 +1,15 @@
 <article>
 <style type="text/css">
-	svg .glyph {
-		stroke: #600;
-		fill: none;
-	}
-	svg .vowel {
-		stroke: #044;
-		fill: none;
-	}
-	svg .radical {
-		stroke: #004;
-		fill: none;
-	}
-	svg .enclosure {
-		stroke: #000;
-		fill: none;
-	}
+	svg circle, svg path { fill: none; }
+	svg .glyph { stroke: #600; }
+	svg .vowel { stroke: #044; }
+	svg .radical { stroke: #004; }
+	svg circle.radical { fill: black; }
+	svg .enclosure { stroke: #000; }
 </style>
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="400px" height="400px" preserveAspectRatio="xMidYMax" id="arena" viewBox="-100 -100 200 200">
+<div class="row-fluid">
+<div class="span6 offset3">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="400px" preserveAspectRatio="xMidYMax" id="arena" viewBox="-105 -105 210 210">
 <defs>
 <path id="mound" d="M-10,0 H-8 A9,8 0,0,1 8,0 H10" class="glyph"></path>
 <g id="mound2">
@@ -47,6 +39,8 @@
 <path id="weird_up" d="M -4,-4 A 4,6 0,0,0 0,-8 A 4,6 0,0,0 4,-4" class="vowel"></path>
 <path id="weird_down" d="M -4,-8 A 4,6 0,0,0 0,-4 A 4,6 0,0,0 4,-8" class="vowel"></path>
 </svg>
+</div>
+</div>
 <hr>
 <input type="text" value="shoof~l ihs ~ bihg dohrk" />
 <h3>Available Sounds:</h3>
@@ -160,7 +154,7 @@
 	var radical_length = 3;
 	var radical_length_vowel = 6;
 	var vowel_radius = 4;
-	var inset = 5;
+	var inset = 15;
 	var word_radius = 20;
 	var sentence_radius = 100;
 
