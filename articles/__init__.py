@@ -10,6 +10,7 @@ from flask import Blueprint, render_template, send_from_directory, abort
 
 folder = "articles"
 article_base_template = os.path.join(folder, "article.template.html")
+article_small_template = os.path.join(folder, "article.zip.template.html")
 bloop = Blueprint("articles", __name__, template_folder="")
 
 @bloop.route("/")
@@ -17,11 +18,10 @@ def main_page():
 	"""Renders the list of articles/projects."""
 	return render_template("project_list.html")
 
-@bloop.route("/raw/<path:page_name>/")
-def render_file(page_name):
-	"""Does nothing. Not really sure why I have this."""
-	file_name = os.path.join(folder, page_name.replace("-", "_"))
-	
+@bloop.route("/.zip/")
+def main_page_small():
+	return render_template("project_list.zip.html")
+
 @bloop.route("/<article_name>/")
 def render_article(article_name):
 	"""Renders a requested article! This should always be @routed last, because it catches a 
@@ -47,6 +47,8 @@ def render_article(article_name):
 		# {article fragment}, but using the {article base template}. In the future, this should possibly also
 		# extract the title from the {article fragment} and feed it into the {article base template} as well.
 		return render_template(article_base_template, target=file_name + ".article.html")
+	if file_name.endswith(".zip") and os.path.isfile(file_name[:-4] + ".article.html"):
+		return render_template(article_small_template, target=file_name[:-4] + ".article.html")
 	if os.path.isfile(file_name + ".html"):
 		# If we haven't found any results yet, check to see if "articles/some_article.html" exists. If it does,
 		# just display it plain. This also provides a clean way to access the raw form of files like
@@ -98,5 +100,7 @@ def supplementary(article_name, file_path):
 
 	# If that file wasn't found, then, well, whoops.
 	abort(404)
+
+bloop.route("/<article_name>.zip/<path:file_path>")(supplementary)
 
 """Th-th-th-that's all, folks!"""
