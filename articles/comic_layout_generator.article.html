@@ -37,10 +37,14 @@ function split_types(panel) {
   var aspect_ratio = get_aspect_ratio(panel);
   if (aspect_ratio < 5) {
     splits.push(split_vertical);
+    splits.push(split_vertical);
+    splits.push(split_vertical);
     splits.push(multisplit_vertical);
   }
   
   if (aspect_ratio > 0.2) {
+    splits.push(split_horizontal);
+    splits.push(split_horizontal);
     splits.push(split_horizontal);
     splits.push(multisplit_horizontal);
   }
