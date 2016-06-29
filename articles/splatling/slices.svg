@@ -1,0 +1,130 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg viewBox="0 0 500 500"
+	preserveAspectRatio="meet"
+	version="1.1"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<defs>
+<style type="text/css">
+text {
+	font-size: 10px;
+}
+circle, path {
+	fill: none;
+	stroke-width: 1px;
+}
+
+.barrel-mid {
+	stroke: black;
+}
+
+.barrel-end {
+	stroke: orange;
+}
+
+
+</style>
+
+<circle id="hole" r="5"/>
+
+<g id="positioned-hole">
+	<use xlink:href="#hole" transform="translate(-20, 0)"/>
+</g>
+
+<g id="hole-set">
+	<use xlink:href="#positioned-hole" transform="rotate(0)"/>
+	<use xlink:href="#positioned-hole" transform="rotate(60)"/>
+	<use xlink:href="#positioned-hole" transform="rotate(120)"/>
+	<use xlink:href="#positioned-hole" transform="rotate(180)"/>
+	<use xlink:href="#positioned-hole" transform="rotate(240)"/>
+	<use xlink:href="#positioned-hole" transform="rotate(300)"/>
+</g>
+
+<path id="tooth" d="M -3,0  L -2,4  L 2,4  L 3,0"/>
+<g id="positioned-tooth">
+	<use xlink:href="#tooth" transform="translate(-30) rotate(90)"/>
+</g>
+
+<path id="tooth-with-arc" d="
+M29.8457,-3.03857 
+L34,-2 
+V2 
+L29.8457, 3.03857
+A 30,30 0 0 1 27.3664,12.2914
+"/>
+<g id="three-teeth">
+	<use xlink:href="#tooth-with-arc" transform="rotate(0)"/>
+	<use xlink:href="#tooth-with-arc" transform="rotate(30)"/>
+	<use xlink:href="#tooth-with-arc" transform="rotate(60)"/>
+</g>
+<g id="tooth-set">
+	<use xlink:href="#three-teeth" transform="rotate(0)"/>
+	<use xlink:href="#three-teeth" transform="rotate(90)"/>
+	<use xlink:href="#three-teeth" transform="rotate(180)"/>
+	<use xlink:href="#three-teeth" transform="rotate(270)"/>
+</g>
+
+<g id="small-spacer">
+	<circle r="30"/>
+	<circle r="5"/>
+	<use xlink:href="#hole-set"/>
+</g>
+
+<g id="big-spacer">
+	<circle r="34"/>
+	<use xlink:href="#hole-set"/>
+</g>
+
+<g id="spacer-with-teeth">
+	<use xlink:href="#hole-set"/>
+	<use xlink:href="#tooth-set"/>
+</g>
+
+<g id="barrel-spacer-set">
+	<use xlink:href="#small-spacer" transform="translate(0,0)"/>
+	<use xlink:href="#small-spacer" transform="translate(100,0)"/>
+	<use xlink:href="#small-spacer" transform="translate(200,0)"/>
+	<use xlink:href="#small-spacer" transform="translate(300,0)"/>
+</g>
+</defs>
+
+<g transform="translate(50,50)">
+	<text y="-40">Barrel spacer #1</text>
+	<use xlink:href="#barrel-spacer-set" class="barrel-mid"/>
+</g>
+
+<g transform="translate(50,150)">
+	<text y="-40">Barrel spacer #2</text>
+	<use xlink:href="#barrel-spacer-set" class="barrel-mid"/>
+</g>
+
+<g transform="translate(50,250)">
+	<text y="-40">Barrel spacer #3</text>
+	<use xlink:href="#barrel-spacer-set" class="barrel-mid"/>
+</g>
+
+<g transform="translate(50,350)">
+	<text y="-40">End barrel spacer</text>
+	<use xlink:href="#barrel-spacer-set" class="barrel-end"/>
+</g>
+
+<g transform="translate(50,450)">
+	<text y="-40">Barrel end with holes</text>
+	<g class="barrel-end">
+		<use xlink:href="#big-spacer" transform="translate(0,0)"/>
+		<use xlink:href="#spacer-with-teeth" transform="translate(100,0)"/>
+		<use xlink:href="#spacer-with-teeth" transform="translate(200,0)"/>
+		<use xlink:href="#spacer-with-teeth" transform="translate(300,0)"/>
+		<use xlink:href="#big-spacer" transform="translate(400,0)"/>
+	</g>
+</g>
+
+<g transform="translate(450,50)">
+	<use xlink:href="#big-spacer"/>
+	<use xlink:href="#spacer-with-teeth"/>
+</g>
+
+</svg>

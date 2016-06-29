@@ -1,0 +1,69 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg viewBox="0 0 500 500"
+	preserveAspectRatio="meet"
+	version="1.1"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<defs>
+
+<style type="text/css">
+text {
+	font-size: 10px;
+	stroke: none !important;
+}
+
+use {
+	stroke: red;
+	stroke-width: 1px;
+}
+
+circle, path {
+	fill: none;
+	stroke: red;
+	stroke-width: 1px;
+}
+</style>
+
+<use id="spacer" xlink:href="slices.svg#small-spacer"/>
+<use id="spacer-with-teeth" xlink:href="slices.svg#spacer-with-teeth"/>
+<use id="big-spacer" xlink:href="slices.svg#big-spacer"/>
+
+<g id="spacer-column">
+	<use xlink:href="#spacer" transform="translate(0,0)"/>
+	<use xlink:href="#spacer" transform="rotate(60) translate(65,0)"/>
+	<use xlink:href="#spacer" transform="rotate(60) translate(65,0) rotate(60) translate(65,0)"/>
+	<use xlink:href="#spacer" transform="rotate(60) translate(65,0) rotate(60) translate(65,0) rotate(-60) translate(65,0)"/>
+</g>
+
+</defs>
+
+
+<g transform="translate(50,50)">
+	<text y="-40">sixteen small barrel spacers</text>
+	<g class="barrel-mid">
+		<use xlink:href="#spacer-column"/>
+		<use xlink:href="#spacer-column"/>
+		<use xlink:href="#spacer-column" transform="translate(65,0)"/>
+		<use xlink:href="#spacer-column" transform="translate(65,0) translate(65,0)"/>
+	</g>
+	<g class="barrel-end">
+		<use xlink:href="#spacer-column" transform="translate(65,0) translate(65,0) translate(65, 0)"/>
+	</g>
+</g>
+
+<g class="barrel-end" transform="translate(50,300)">
+	<text y="-40">large barrel end spacer</text>
+	<use xlink:href="#big-spacer" transform="translate(0,0)"/>
+	<use xlink:href="#big-spacer" transform="translate(0,0) rotate(60) translate(70,0)"/>
+	<use xlink:href="#big-spacer" transform="translate(70,0)"/>
+	<use xlink:href="#big-spacer" transform="translate(70,0) rotate(60) translate(70,0)"/>
+	<use xlink:href="#spacer-with-teeth" transform="translate(140,0)"/>
+	<use xlink:href="#spacer-with-teeth" transform="translate(140,0) rotate(60) translate(70,0)"/>
+	<use xlink:href="#spacer-with-teeth" transform="translate(210,0)"/>
+	<use xlink:href="#spacer-with-teeth" transform="translate(210,0) rotate(60) translate(70,0)"/>
+</g>
+
+</svg>

@@ -1,0 +1,82 @@
+<article id="tattoo_elements">
+<style type="text/css">
+	#tattoo_elements li { margin-bottom: 1em; }
+</style>
+<p><a href="http://chemistry.bd.psu.edu/jircitano/periodic4.html">thanks to this site for the images!</a> feel free to suggest other good elements from there.</p>
+<ul>
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Au.gif" />Gold
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Pt.gif" />Platinum
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Ag.gif" />Silver
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/He.gif" />Helium
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Li.gif" />Lithium
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Be.gif" />Beryllium
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Pb.gif" />Lead
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Cd.gif" />Cadmium
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Si.gif" />Silicon
+	<li><img src="http://chemistry.bd.psu.edu/jircitano/Ca.gif" />Calcium
+</ul>
+<p>for use on the results of <a href="http://physics.nist.gov/PhysRefData/ASD/lines_form.html">this atomic spectra database</a>:</p>
+<p>CSS:</p>
+<pre>
+.ac {
+    background-color: red;
+    display: inline-block;
+    width: 1px;
+    height: 200px;
+}
+</pre>
+<p>javurscript:</p>
+<pre>
+var jq = document.createElement('script');
+jq.src = "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js";
+document.getElementsByTagName('head')[0].appendChild(jq);
+</pre>
+<p>wait a moment and more javascript:</p>
+<pre>
+jQuery.noConflict();
+$ = jQuery;
+
+var the_table = $($('table')[4]);
+
+function do_stuff(start, end, intensity_cutoff) {
+var wavelengths = [];
+
+$(the_table.find('tbody')[1]).find('tr').each(function() { 
+if ($(this).hasClass('evn') || $(this).hasClass('odd')) { $(this).show(); }
+else { $(this).hide(); return true; }
+
+var wavelength_cell = $($(this).find('td')[0]); 
+var wavelength = parseFloat(wavelength_cell.text());
+if (wavelength &gt;= start && wavelength &lt;= end) { $(this).show(); }
+else { $(this).hide(); return true;}
+
+var intensity_cell = $($(this).find('td')[2]); 
+var intensity = parseInt(intensity_cell.text(), 10);
+if (intensity &gt;= intensity_cutoff) { $(this).show(); }
+else { $(this).hide(); return true;}
+
+wavelengths.push((wavelength - start)/(end - start));
+});
+return wavelengths;
+}
+
+
+the_table.after($('&lt;div id="shoof-thing"&gt;&lt;/div&gt;').attr('height', '100px').attr('width', '100%'));
+var c = $('#shoof-thing')
+
+
+function new_thing(x) { return $('&lt;div&gt;&lt;/div&gt;').addClass('ac').css('margin-left', x); }
+
+
+var w = do_stuff(380, 760, 9);
+var l = w.length;
+var o = [];
+$.each(w, function(i, v) {
+if (i == 0) { o.push("" + (v*95) + "%"); }
+else { o.push("" + ((v-w[i-1])*95) + "%"); }
+});
+c.children().remove();
+$.each(o, function(i, v) { c.append(new_thing(v)); });
+
+</pre>
+</article>

@@ -1,0 +1,47 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg viewBox="0 0 600 600"
+	preserveAspectRatio="meet"
+	version="1.1"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+
+<g id="red_dots">
+	<rect x="38" y="-12" width="124" height="24" style="fill:grey;"/>
+	<circle cy="0" cx="50" r="10" style="fill:red;stroke:black;stroke-width:1px"/>
+	<circle cy="0" cx="100" r="10" style="fill:red;stroke:black;stroke-width:1px"/>
+	<circle cy="0" cx="150" r="10" style="fill:red;stroke:black;stroke-width:1px"/>
+</g>
+
+</defs>
+
+<g transform="translate(50,50)">
+	<g id="local_reference">
+		<rect x="-5" y="-15" width="550" height="50" style="fill:lightgrey;"/>
+		<text>These dots are defined in this file, and referenced with the SVG "use" element.</text>
+		<use xlink:href="#red_dots" transform="translate(0,15)"/>
+	</g>
+
+	<g transform="translate(0,100)">
+		<use xlink:href="#local_reference" />
+		<text x="0" y="50">This is a reference to the above group, including the text.</text>
+	</g>
+</g>
+
+<g transform="translate(50,300)">
+	<g id="imported">
+		<rect x="-5" y="-15" width="550" height="50" style="fill:lightgrey;"/>
+		<text>These dots are defined in another file, and imported with another "use" tag.</text>
+		<use xlink:href="external_source.svg#blue_dots" transform="translate(0,15)"/>
+	</g>
+
+	<g transform="translate(0,100)">
+		<use xlink:href="#imported"/>
+		<text x="0" y="50">This is a reference to the above group, in the same manner as with the local references.</text>
+		<text x="0" y="70">Where did the dots go???</text>
+	</g>
+</g>
+
+</svg>
