@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Projects, by Shoofle</title>
+		<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+		<link href="/static/shoofle.css" rel="stylesheet" type="text/css">
+        <style type="text/css"> body { transform: scale(0.5); transform-origin: 0% 0%; } </style>
+	</head>
+	<body>
+		<article class="project">
+			<a name="auriga"></a>
+			<h2 class="title">This site!</h2>
+			<p>I made this site. It's a showcase of the various projects I work on, and basically the cool things I do.</p>
+			<p>It's served by a <a href="http://flask.pocoo.org">flask-based</a> miniserver that I wrote. It don't do much, but it works!</p>
+			<p>For the most part the pages themselves are hand-crafted HTML/CSS, like the artisanal coders of old.</p>
+			<p>A large portion of this attractive layout is due to the excellent work of the folks at <a href="http://twitter.github.io/bootstrap/">bootstrap</a>.</p>
+			<p><a href="../auriga/">I've been thinking more about how this server should be laid out, because I just kind of slapped it together.</a></p>
+		</article>
+		<article class="project">
+			<a name="lambdamoo"></a>
+			<h2 class="title">Worldbuilding Experiment #1: In and Out of the LambdaMOO!</h2>
+			<p>I like MUDs - Multi-User Dungeons. They're cute to mess around in, and make a fun forum for roleplaying and enjoying a world with just text. I hadn't heard of MOOs - MUDs, but Object Oriented! A friend set up a LambdaMOO server for us to play around in, and I quickly got hooked - the distinguishing feature of LambdaMOO is that, being object-oriented, everything in the world (players, rooms, objects, whatever!) is an object and can be scripted by the same basic rules - and so the world is infinitely extensible.</p>
+			<p>It's not a particularly elegant interface, and the language it uses (MOOCode) is far from pretty - but I was immediately impressed by how easy it was to create complicated behaviors and build your own worlds. So, faced with an empty canvas, I started building. Before I knew it, there were the beginnings of a setting in front of me. <span class="todo">I'm going to write a page about it on its own soon, but I haven't gotten around to it.</span> It was cool, but stale - so I learned the language (didn't take long!) and before I knew it, the rolling plains of my world had a giant creature striding across them! My city was, with just a few short lines, bustling with NPCs wandering around. It was great!</p>
+			<p>Of course, I was proud of what I had built - but I could only give the same description of the world so many times before I got tired of telling people about this awesome world in my head. Getting people onto the server itself would be too much trouble. I wanted to bring my world out of my friend's server - so I set to work.</p>
+			<p>Exporting from LambdaMOO isn't easy. Basically your options are: <ul><li>Copy the database.</li></ul> That's it. I figured that, given how simple the data itself is, there had to be <em>some</em> way to show this to people! So I looked around for a bit to find some way to show people a world like this - even if it was just to explore the setting, without the giant creatures or NPCs therein.</p>
+			<p>Through entirely unrelated means, around this time, I had heard of something called <a href="http://www.gimcrackd.com/etc/src/">Twine</a>. Twine is a program for writing interactive fiction, styled after the old Choose Your Own Adventure books of our childhoods. It's got a nice, easy-to-use GUI so that nontechnical people can write games with this - which is how I heard of it. There's a tremendous number of people who are just writing tiny, fascinating games using Twine, because it's free and you don't need to be a programmer! Fascinating for games as a medium. <span class="todo">I'm going to write some Twine games at some point, but I haven't yet.</span> For me, Twine was great because of the other part of the application - twee.</p>
+			<p>Twee is the CLI version of Twine, which takes a specially formatted plaintext file and turns it into HTML for the equivalent hypertext game. You write passages, specify links between them, and so on. It takes a simple format. So this is what inspired me:</p>
+			<p>In the MOO, I described a simple object, using the NPC base class my friend built, that would wander around with specified limitations on where it could go within the world. As it did so, it would write down all the places it had been. As a final step, I defined functionality for this Cartographer to print out for me the places it has been, in the format that twee takes. Copy-and-paste into a file, twee churns it out, and <a href="city-on-the-river">ta-da!</a></p>
+			<p>You can think what you want of the city I built - and it may be out of date, because I'm continuing to work and only occcasionally run the Cartographer - but I'm proud of it. More than that, I'm proud of the fact that my solution, when faced with the problem of how to get my world out of a server, was to describe an NPC who literally maps out the world, set them at it, and put their map through a converter directly into a webpage. I did a minimum of coding for this, and it's awesome that the tools exist for such an easy-to-explain solution.</p>
+		</article>
+		<article class="project">
+			<a name="shoof-shoof-revolution"></a>
+			<h2 class="title">Shoof Shoof Revolution!</h2>
+			<p>As part of Play for X, I made a javascript-powered clone of DDR, using SVG. I like working with SVG and javascript - I can directly manipulate drawing rules and maintain an incredibly tight feedback loop as I develop. In this case, though, I was so proud of what I made that I kept trying to make it better. It's far from finished and I've set it aside as I work on other projects, but, in theory, this project was to make a simple javascript clone of DDR - but using the web audio API, I was going to make it so you could load in a file, entirely locally, and it would do automatic beat detection and generate an actual track for your song. Unfortunately, audio processing and beat detection is less than easy and simple when you're using javascript. <a href="http://github.com/shoofle/shoof-shoof-revolution">It's a cool project, and I'm interested in returning to it sometime.</a></p>
+		</article>
+		<article class="project">
+			<a name="spinning"></a>
+			<h2 class="title">Spinning!</h2>
+			<p>I'm into spinning. Here is a list of things I do not mean:</p>
+			<ul>
+				<li>group stationary biking</li>
+				<li>repeatedly turning around (well, sometimes)</li>
+				<li>hitting the gas with insufficient traction</li>
+			</ul>
+			<p>Here is a list of what I do mean:</p>
+			<ul>
+				<li>A performance art revolving (HA!) around skilled manipulation of a variety of props, frequently incorporating dance.</li>
+			</ul>
+			<p>It's kind of like juggling. It'd be hard to explain juggling without showing - <a href="http://www.youtube.com/watch?v=0smoYMNsW-k#3m10s">but fortunately, we live in the future.</a></p>
+			<p>I've been spinning poi since 2010, and I'm (I think) reasonably competent. I tend to favor fast circle-spinning over heavy use of stalls and pendulums, and I'm proud of the variety I've developed in my weaves. I can spin a five-beat weave forward, but I'm still working on the reverse. <a href="spinning">This should have a more comprehensive list of my spinning repertoire, because I like listing things.</a> I spin a pair of <a href="http://www.youtube.com/watch?v=0smoYMNsW-k">sol-colored crystal case flowlights</a>.
+			</p><p>Since the end of 2012 I have also been spinning a staff. I use one that I made from aluminum pipe bought from amazon's hobby supply website. It's got a pair of old blue jeans' legs for end padding, and it's heavy as a bag of bricks but it works. I can do a <a href="spinning">variety of things</a> with it.</p>
+			<p><span class="todo">I still don't have any videos up, but that should change soon.</span></p>
+		</article>
+		<article class="project">
+			<a name="silver-asterism"></a>
+			<h2 class="title">I Blog with Friends?</h2>
+			<p>I occasionally post on <a href="http://silverasterism.blogspot.com/">this game design and discussion blog called Silver Asterism</a> run by a couple friends and myself. It's a pretty sweet thing. We don't post particularly often, but we're all passionate about gaming. We even taught a seminar class for part of a semester about games as art when we were in college together!</p>
+		</article>
+		<article class="project">
+			<a name="guitar"></a>
+			<h2 class="title">I play a guitar???</h2>
+			<p>I like music! I'm not particularly <em>good</em> at it, but I like it. I have a guitar, it is tiny and I adore it. Every now and then I pick it up and try to figure out how to get some sound out of it.</p>
+			<p>I've been collecting tab for songs I find interesting for quite some time now, and I figured I might as well <a href="../guitar_tab/">store them online</a> so that I can pull them up easily:</p>
+			<ul>
+				{% for file in guitar_files %}
+				<li><a href="../guitar_tab/{{ file }}">{{ file|replace("_"," ") }}</a></li>
+				{% endfor %}
+			</ul>
+		</article>
+	</body>
+</html>
