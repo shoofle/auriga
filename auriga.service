@@ -1,0 +1,13 @@
+[Unit]
+Description=The Auriga Webserver
+After=network.target
+
+[Service]
+User=mrserver
+WorkingDirectory=/home/shoofle/auriga
+ExecStart=authbind gunicorn -b shoofle.net:80 pure_flask:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

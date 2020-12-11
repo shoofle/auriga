@@ -1,1 +1,1 @@
-sudo -u mrserver authbind gunicorn -b li60-203.members.linode.com:80 pure_flask:app
+sudo -u mrserver authbind gunicorn -b shoofle.net:80 pure_flask:app
