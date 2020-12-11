@@ -1,0 +1,40 @@
+<head>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/annyang/1.1.0/annyang.min.js"></script>
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript">
+$(document).on("ready", function() {
+	var start_url = "http://www.mspaintadventures.com/?s=6&p=003425";
+	var ifr = $("iframe");
+	if (!ifr.attr("src") || ifr.attr("src").length == 0) {
+		ifr.attr("src", start_url);
+	}
+	if (annyang) {
+	console.log("we got to the commands");
+	var commands = {
+		"next" : function () {
+			console.log("stuff happened");
+			url = $("iframe").attr("src");
+			number = (parseInt(url.slice(-6), 10)+1).toString();
+			while (number.length < 6) {
+				number = "0" + number;
+			}
+			url = url.slice(0,-6) + number;
+			$("iframe").attr("src", url);
+		},
+		"down" : function () {
+			console.log('go down!');
+		}
+	};
+	annyang.addCommands(commands);
+	annyang.start();
+	console.log("annyang should be listening");
+}
+});
+</script>
+<style type="text/css">
+iframe { width: 100%; height: 100%;}
+</style>
+</head>
+<html>
+<iframe />
+</html>
