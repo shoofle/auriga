@@ -1,6 +1,6 @@
 <article>
 <style type="text/css">
-table {
+#consonant-grid, #vowel-grid {
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -12,6 +12,15 @@ table > img {
 	width: 50%;
 	height: 50%;
 }
+.example-glyph {
+	width: 20%;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+.vowel-example {
+	display: inline-block;
+}
 </style>
 <h3>An introduction to Circle Script (Version... 3?)</h3>
 <p>Circle script is a writing system that I made up. The fundamental gimmick of it is that words and sentences in it form circles.</p>
@@ -19,8 +28,8 @@ table > img {
 <p>It's largely decorative, has vague intentions at being phonetic, and I like using it in art! The other primary use case is writing cute notes to people I like.</p>
 <h4>Here's the overview of how to read circle script:</h5>
 <p>To read circle script, you start at whatever spot is marked with a little line segment outside the circle, parallel to it. If that's not present, you can usually start at the bottom. Walk around the circle widdershins (counterclockwise) and decode each shape and glyph you encounter, turning them into sounds.</p>
-<img src="/circle_script/circle_script_example_1.jpg" alt="A circle script glyph showing a single word-circle, with a small line outside the circle for a starting-point indicator." />
-<p>If you're reading a whole sentence, you walk around the circle widdershins (counterclockwise), and read each word as you come across it. For each word, you read it starting from the point where it touches the circle that contains it, so you kind of reorient as you go.</p>
+<img src="/circle_script/zagreus.svg" alt="A circle script glyph showing a single word-circle, with a small line outside the circle for a starting-point indicator." class="example-glyph"/>
+<p>If you're reading a whole sentence, you walk around the circle and read each word as you come across it. For each word, you read it starting from the point where it touches the circle that contains it, so you kind of reorient as you go.</p>
 <p>Also, you might have noticed that some of the shapes inside word-circles have lines connecting them. Those are decorative! A lot of the component parts of the circle script writing system have places for lines to come off. These can be connected as you like, but the... proper? I guess? fancy, perhaps? way to use them is to draw connecting lines between words which are conceptually linked. You might use those lines to connect an adjective with the noun it modifies, or the names of two people who care about each other. There's a lot of room for poetic embellishment in drawing lines between words!</p>
 <p>Of course, you can also just draw the lines out in a way that looks cool. :)</p>
 <h4>Okay, now the meat of circle script: How to read words!</h5>
@@ -82,14 +91,77 @@ table > img {
 	</tbody>
 </table>
 <p>If you're familiar with the <a href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet">international phonetic alphabet</a> this might look somewhat familiar! (Although I've taken some heavy liberties to make this fit into a grid and match with my American understanding of what sounds are similar) Each square in the grid shows the two consonants (one unvoiced, one unvoiced) indicated by that combination of diacritic (above) and shape (from the side). The unvoiced version (on the left, in a grid square) is indicated by the single-line version of the shape, seen on the left side of the grid. The voiced version uses the double-line version, seen on the right side of the grid. I've included the IPA transcription for the consonants, along with an example of that sound in my dialect, which is probably roughly <a href="https://en.wikipedia.org/wiki/General_American_English">General American English</a>.</p>
-<p>Vowels are a little more haphazard. Have you ever really thought about vowels? They're pretty messed up, especially in English. We were all taught the five vowels are a, e, i, o, u, and sometimes y. It turns out that while we have five and a half <em>letters</em> we call vowels, in English, they correspond to anywhere between twelve and fifteen different <em>sounds</em>. And those sounds aren't even necessarily the ones you're thinking of - a lot of the things we think of as individual vowels, like the /i/ in "r<strong>i</strong>ght", are actually diphthongs, composed of two vowels that we run together.</p>
+<p>Vowels are a little more haphazard. Have you ever really thought about vowels? They're pretty messed up, especially in English. We were taught the five vowels are a, e, i, o, u, and sometimes y. It turns out that while we have five and a half <em>letters</em> we call vowels, in English, they correspond to anywhere between twelve and fifteen different <em>sounds</em>. And those sounds aren't even necessarily the ones you're thinking of - a lot of the things we think of as individual vowels, like the /i/ in "r<strong>i</strong>ght", are actually diphthongs, composed of two vowels that we run together.</p>
 <p>Anyway, the vowels are vaguely organized according to whatever I thought made sense, into a handful of "sequences". In general, they're drawn by changing the shape of the overall circle defining a word - as you're drawing that circle, you make a detour to trace out the vowel shape. That overall shape indicates the sequence, and it's narrowed further down by lines or circles drawn on it. Is it lines? Is it circles? Who knows, I haven't decided yet!</p>
 <p>The examples I give are based on my accent, so if there's any confusion, consult a resource like <a href="https://ipachart.com">ipachart.com</a> for recordings of vowels. Several common diphthongs are available as vowel shapes.</p>
-<div id="vowels-container">
-	<div class="vowel-sequence"></div>
-	<div class="vowel-sequence"></div>
-	<div class="vowel-sequence"></div>
-	<div class="vowel-sequence"></div>
+<p>First are three groups of "primary" vowels, which are mostly monophthongs.</p>
+<div id="vowel-grid">
+	<div class="vowel-sequence">
+		<div class="vowel-example">
+			<img src="vowel-beat.svg" />
+			[i], beat
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-bit.svg" />
+			[ɪ], bit
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-but.svg" />
+			[ʌ, ə], but or schwa (unstressed)
+		</div>
+	</div>
+	<div class="vowel-sequence">
+		<div class="vowel-example">
+			<img src="vowel-boot.svg" />
+			[u], boot
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-book.svg" />
+			[ʊ], book
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-box.svg" />
+			[ɑ, a], box or bah
+		</div>
+	</div>
+	<div class="vowel-sequence">
+		<div class="vowel-example">
+			<img src="vowel-bait.svg" />
+			[ɛi, e], bait
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-bet.svg" />
+			[ɛ], bet
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-bat.svg" />
+			[æ], bat
+		</div>
+	</div>
+	<div class="vowel-sequence">
+		<div class="vowel-example">
+			<img src="vowel-boy.svg" />
+			[ɔi, ɔɪ], boy
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-by.svg" />
+			[ai, aɪ], by
+		</div>
+	</div>
+	<div class="vowel-sequence">
+		<div class="vowel-example">
+			<img src="vowel-boat.svg" />
+			[o, ɔu], boat
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-cow.svg" />
+			[au], cow
+		</div>
+		<div class="vowel-example">
+			<img src="vowel-bawk.svg" />
+			[ɔ], bawk
+		</div>
+	</div>
 </div>
 
 

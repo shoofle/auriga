@@ -64,6 +64,8 @@ def render_article(article_name):
 	# convince this blueprint to return the former. However, as sacrifices go, I don't think it's too bad, and 
 	# that should be the only case when this happens.
 
+        # It also can't find files with hyphens in their name, because they get replaced with underscores.
+
 	# If we didn't find any files, throw up a 404.
 
 	abort(404)

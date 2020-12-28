@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+	<style type="text/css">
+	.container {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		font-size: xx-large;
+		width: 100%;
+		height: 500px;
+		background: lightblue;
+		top: 0px;
+		bottom: 0px;
+	}
+	#time, #current-temp, #lows, #highs {
+		background: red;
+		position: absolute;
+	}
+	#time {
+		left: 40px;
+		top: 40px;
+	}
+	#current-temp {
+		right: 40px;
+		top: 40px;
+		background: red;
+	}
+	#lows {
+		bottom: 40px;
+		left: 40px;
+	}
+	#highs {
+		bottom: 40px;
+		right: 40px;
+	}
+
+	#top-alert {
+		background: blue;
+	}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div id="time">
+			10:04 AM
+		</div>
+		<div id="current-temp">
+			big 50F
+		</div>
+		<div id="lows">
+			low of 20F
+		</div>
+		<div id="highs">
+			high of 900F
+		</div>
+		<div id="top-alert">
+			Happy spring!
+		</div>
+		<div id="second-alert">
+			Today is a good day to start planting!
+		</div>
+		<div>
+			There's a frost coming up, probably a long one. It might a good time to do final harvest!
+		</div>
+		<div>
+			Monday is probably going to be the last frost. Get ready to plant!
+		</div>
+		<div>
+			Very high chance of rain today. You won't need to water.
+		</div>
+		<div>
+			Tonight it will go down to 20F. That's below freezing. 
+		</div>
+	</div>
+</body>
+</html>
