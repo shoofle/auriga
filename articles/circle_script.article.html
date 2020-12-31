@@ -4,7 +4,7 @@
 	margin-left: auto;
 	margin-right: auto;
 }
-td {
+td, .vowel-sequence {
 	padding: 2em;
 	border: 2px solid gray;
 }
@@ -21,10 +21,17 @@ table > img {
 .vowel-example {
 	display: inline-block;
 }
+.vowel-example * {
+	vertical-align: middle;
+}
+.vowel-example svg {
+	width: 6em;
+	height: 6em;
+}
 </style>
 <h3>An introduction to Circle Script (Version... 3?)</h3>
 <p>Circle script is a writing system that I made up. The fundamental gimmick of it is that words and sentences in it form circles.</p>
-<img src="/circle_script/circle_script_example_1.jpg" alt="A large glyph composed of nested circles." />
+<img src="splash-example.svg" alt="A large glyph composed of nested circles." />
 <p>It's largely decorative, has vague intentions at being phonetic, and I like using it in art! The other primary use case is writing cute notes to people I like.</p>
 <h4>Here's the overview of how to read circle script:</h5>
 <p>To read circle script, you start at whatever spot is marked with a little line segment outside the circle, parallel to it. If that's not present, you can usually start at the bottom. Walk around the circle widdershins (counterclockwise) and decode each shape and glyph you encounter, turning them into sounds.</p>
@@ -90,79 +97,133 @@ table > img {
 		</tr>
 	</tbody>
 </table>
-<p>If you're familiar with the <a href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet">international phonetic alphabet</a> this might look somewhat familiar! (Although I've taken some heavy liberties to make this fit into a grid and match with my American understanding of what sounds are similar) Each square in the grid shows the two consonants (one unvoiced, one unvoiced) indicated by that combination of diacritic (above) and shape (from the side). The unvoiced version (on the left, in a grid square) is indicated by the single-line version of the shape, seen on the left side of the grid. The voiced version uses the double-line version, seen on the right side of the grid. I've included the IPA transcription for the consonants, along with an example of that sound in my dialect, which is probably roughly <a href="https://en.wikipedia.org/wiki/General_American_English">General American English</a>.</p>
+<p>If you're familiar with the <a href="https://en.wikipedia.org/wiki/International_Phonetic_Alphabet">international phonetic alphabet</a> this might look somewhat familiar! (Although I've taken some heavy liberties to make this fit into a grid and match with my American understanding of what sounds are similar) Each square in the grid shows the two consonants (one unvoiced, one unvoiced) indicated by that combination of diacritic (above) and shape (from the side). The unvoiced version (on the left, in a grid square) is indicated by the single-line version of the shape, seen on the left side of the grid. The voiced version uses the "heavy" version, seen on the right side of the grid and originally drawn with a doubled line. I've included the IPA transcription for the consonants, along with an example of that sound in my dialect, which is probably roughly <a href="https://en.wikipedia.org/wiki/General_American_English">General American English</a>.</p>
 <p>Vowels are a little more haphazard. Have you ever really thought about vowels? They're pretty messed up, especially in English. We were taught the five vowels are a, e, i, o, u, and sometimes y. It turns out that while we have five and a half <em>letters</em> we call vowels, in English, they correspond to anywhere between twelve and fifteen different <em>sounds</em>. And those sounds aren't even necessarily the ones you're thinking of - a lot of the things we think of as individual vowels, like the /i/ in "r<strong>i</strong>ght", are actually diphthongs, composed of two vowels that we run together.</p>
-<p>Anyway, the vowels are vaguely organized according to whatever I thought made sense, into a handful of "sequences". In general, they're drawn by changing the shape of the overall circle defining a word - as you're drawing that circle, you make a detour to trace out the vowel shape. That overall shape indicates the sequence, and it's narrowed further down by lines or circles drawn on it. Is it lines? Is it circles? Who knows, I haven't decided yet!</p>
-<p>The examples I give are based on my accent, so if there's any confusion, consult a resource like <a href="https://ipachart.com">ipachart.com</a> for recordings of vowels. Several common diphthongs are available as vowel shapes.</p>
-<p>First are three groups of "primary" vowels, which are mostly monophthongs.</p>
+<p>Anyway, circle script draws vowels as modifications to the outer circle of a word - as you're drawing the circle, you take a detour to take either a small bite out of it, a big bite out of it, or a loop-the-loop. It is then decorated with a circle, placed either above the detour shape (on the inside of the overall word circle), below the detour shape (often inside the detour shape, towards the outside of the word circle), or on the line of the detour circle. Then, you add a line for emphasis if necessary.</p>
+<p>The vowels are organized in a way close to the five vowel system seen in many languages. Consider the Japanese ka ki ku ke ko; these are considered the "strong" versions of the five basic vowels. They also come in "weak" versions, common in English. The pairing between strong and weak versions is roughly based on whatever I thought made the most sense to my ears. They're listed in the vowel chart. A strong vowel will have a line extending off it, which can be used freely as with the connectors on the consonant glyphs, and a weak vowel will have no such line.</p>
+<p>There's one vowel that I didn't quite fit into a correspondence with another "stronger" or "weaker" vowel, /æ/, which you might know from the word "bat" or "back" (in American English). There are also three common diphthongs provided as vowel glyphs. </p>
+<p>Hopefully, if this system needs to be extended for other vowels, they can be defined by relation to a "similar" sounding vowel, and adding a diacritic of some sort. But that hasn't been standardized yet.</p>
+<p>The examples I give are based on my accent (some variation of general American English), so if there's any confusion, consult a resource like <a href="https://ipachart.com">ipachart.com</a> for recordings of vowels. Several common diphthongs are available as vowel shapes.</p>
+<object data="vowel-example.svg" type="image/svg+xml" style="display: none"></object>
 <div id="vowel-grid">
 	<div class="vowel-sequence">
 		<div class="vowel-example">
-			<img src="vowel-beat.svg" />
-			[i], beat
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-omega" ></use>
+				<use href="vowel-example.svg#dot-outer"></use>
+				<use href="vowel-example.svg#emphasis-outer"></use>
+			</svg>
+			[ɑ, a], box or bah
 		</div>
 		<div class="vowel-example">
-			<img src="vowel-bit.svg" />
-			[ɪ], bit
-		</div>
-		<div class="vowel-example">
-			<img src="vowel-but.svg" />
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-omega" ></use>
+				<use href="vowel-example.svg#dot-outer"></use>
+			</svg>
 			[ʌ, ə], but or schwa (unstressed)
 		</div>
 	</div>
 	<div class="vowel-sequence">
 		<div class="vowel-example">
-			<img src="vowel-boot.svg" />
-			[u], boot
+			<svg viewBox="0 -12 24 80" >
+				<use href="vowel-example.svg#base-mound" ></use>
+				<use href="vowel-example.svg#dot-inner"></use>
+				<use href="vowel-example.svg#emphasis-inner"></use>
+			</svg>
+			[i], beat
 		</div>
 		<div class="vowel-example">
-			<img src="vowel-book.svg" />
-			[ʊ], book
-		</div>
-		<div class="vowel-example">
-			<img src="vowel-box.svg" />
-			[ɑ, a], box or bah
+			<svg viewBox="0 -12 24 80" >
+				<use href="vowel-example.svg#base-mound" ></use>
+				<use href="vowel-example.svg#dot-inner"></use>
+			</svg>
+			[ɪ], bit
 		</div>
 	</div>
 	<div class="vowel-sequence">
 		<div class="vowel-example">
-			<img src="vowel-bait.svg" />
+			<svg viewBox="0 -12 24 80" >
+				<use href="vowel-example.svg#base-mound" ></use>
+				<use href="vowel-example.svg#triangle-inner"></use>
+				<use href="vowel-example.svg#emphasis-inner"></use>
+			</svg>
+			[u], boot
+		</div>
+		<div class="vowel-example">
+			<svg viewBox="0 -12 24 80" >
+				<use href="vowel-example.svg#base-mound" ></use>
+				<use href="vowel-example.svg#triangle-inner"></use>
+			</svg>
+			[ʊ], book
+		</div>
+	</div>
+	<div class="vowel-sequence">
+		<div class="vowel-example">
+			<svg viewBox="0 -12 24 80" >
+				<use href="vowel-example.svg#base-mound" ></use>
+				<use href="vowel-example.svg#dot-outer"></use>
+				<use href="vowel-example.svg#emphasis-outer"></use>
+			</svg>
 			[ɛi, e], bait
 		</div>
 		<div class="vowel-example">
-			<img src="vowel-bet.svg" />
+			<svg viewBox="0 -12 24 80" >
+				<use href="vowel-example.svg#base-mound" ></use>
+				<use href="vowel-example.svg#dot-outer"></use>
+			</svg>
 			[ɛ], bet
 		</div>
+	</div>
+	<div class="vowel-sequence">
 		<div class="vowel-example">
-			<img src="vowel-bat.svg" />
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-omega" ></use>
+				<use href="vowel-example.svg#dot-inner"></use>
+				<use href="vowel-example.svg#emphasis-inner"></use>
+			</svg>
+			[o, ɔu], won't, boat
+		</div>
+		<div class="vowel-example">
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-omega" ></use>
+				<use href="vowel-example.svg#dot-inner"></use>
+			</svg>
+			[ɔ], bawk
+		</div>
+	</div>
+	<div class="vowel-sequence">
+		<div class="vowel-example">
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-omega" ></use>
+				<use href="vowel-example.svg#dot-on"></use>
+			</svg>
 			[æ], bat
 		</div>
 	</div>
 	<div class="vowel-sequence">
 		<div class="vowel-example">
-			<img src="vowel-boy.svg" />
-			[ɔi, ɔɪ], boy
-		</div>
-		<div class="vowel-example">
-			<img src="vowel-by.svg" />
-			[ai, aɪ], by
-		</div>
-	</div>
-	<div class="vowel-sequence">
-		<div class="vowel-example">
-			<img src="vowel-boat.svg" />
-			[o, ɔu], boat
-		</div>
-		<div class="vowel-example">
-			<img src="vowel-cow.svg" />
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-loop" ></use>
+				<use href="vowel-example.svg#dot-outer"></use>
+			</svg>
 			[au], cow
 		</div>
 		<div class="vowel-example">
-			<img src="vowel-bawk.svg" />
-			[ɔ], bawk
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-loop" ></use>
+				<use href="vowel-example.svg#dot-on"></use>
+			</svg>
+			[ai, aɪ], by
+		</div>
+		<div class="vowel-example">
+			<svg viewBox="0 0 24 80" >
+				<use href="vowel-example.svg#base-loop" ></use>
+				<use href="vowel-example.svg#dot-inner"></use>
+			</svg>
+			[ɔi, ɔɪ], boy
 		</div>
 	</div>
 </div>
-
+<p>If you merge caught-cot, it is preferred to use the strong vowel /a~ɑ/ rather than the weak /ɔ/ vowel.</p>
 
 </article>
